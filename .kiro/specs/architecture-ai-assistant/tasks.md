@@ -51,18 +51,29 @@
     - Test that saving and retrieving Mermaid code returns identical content
     - **Validates: Requirements 3.1, 3.2**
 
-- [ ] 3. Implement API Gateway and Lambda infrastructure
-  - [ ] 3.1 Create API Gateway REST API configuration
+- [x] 3. Implement API Gateway and Lambda infrastructure
+
+
+
+
+
+  - [x] 3.1 Create API Gateway REST API configuration
+
+
     - Write `api_gateway.tf` with REST API definition
     - Define routes: POST /api/diagram/generate, GET /api/chat/history, POST /api/chat/save
     - Configure CORS for all origins
     - _Requirements: 6.5, 7.1, 7.2, 7.3_
-  - [ ] 3.2 Create Lambda function infrastructure
+
+  - [x] 3.2 Create Lambda function infrastructure
+
     - Write `lambda.tf` with three Lambda function definitions
     - Configure timeout (60s for generate, 10s for others) and memory
     - Set up Lambda layers for shared dependencies
     - _Requirements: 6.1, 6.3_
-  - [ ] 3.3 Create CloudFront distribution configuration
+
+  - [x] 3.3 Create CloudFront distribution configuration
+
     - Write `cloudfront.tf` with distribution for S3 origin
     - Configure caching behaviors for frontend and diagrams
     - Enable HTTPS with default certificate
