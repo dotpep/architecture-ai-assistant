@@ -1,0 +1,1 @@
+{"statusCode": 200, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}, "body": "{\"success\": true, \"operation\": \"GET\", \"item\": {\"chatId\": \"integration-test-1\", \"userMessage\": \"Integration test message\", \"status\": \"test\", \"timestamp\": \"1734217200\"}, \"message\": \"Item successfully retrieved from DynamoDB\"}"}

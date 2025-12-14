@@ -1,0 +1,1 @@
+{"statusCode": 200, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}, "body": "{\"success\": true, \"operation\": \"PUT\", \"chatId\": \"integration-test-1\", \"timestamp\": 1734217200, \"message\": \"Item successfully written to DynamoDB\"}"}
