@@ -1,0 +1,12 @@
+# Architecture AI Assistant - Example Terraform Variables
+# Copy this file to terraform.tfvars and fill in your values
+
+aws_region          = "us-east-1"
+environment         = "dev"
+project_name        = "architecture-ai-assistant"
+s3_bucket_name      = "architecture-ai-assistant-bucket"
+dynamodb_table_name = "chat_history"
+
+# LLM API Configuration (sensitive - do not commit actual values)
+llm_api_endpoint = "https://api.example.com/v1/chat/completions"
+llm_api_key      = "your-api-key-here"
