@@ -1,0 +1,292 @@
+# Implementation Plan
+
+- [ ] 1. Set up project structure and Terraform foundation
+  - [ ] 1.1 Create directory structure for infrastructure, backend, and frontend
+    - Create `infrastructure/terraform/`, `src/backend/lambda_functions/`, `src/frontend/` directories
+    - Initialize git repository with .gitignore for node_modules, .terraform, __pycache__
+    - _Requirements: 6.1_
+  - [ ] 1.2 Create Terraform provider and backend configuration
+    - Write `main.tf` with AWS provider configuration
+    - Write `variables.tf` with input variables (region, bucket_name, table_name)
+    - Write `outputs.tf` for CloudFront URL, API Gateway URL, resource IDs
+    - _Requirements: 6.1, 6.2_
+  - [ ] 1.3 Create IAM roles and policies for Lambda execution
+    - Write `iam.tf` with Lambda execution role
+    - Define least-privilege policies for DynamoDB, S3, CloudWatch
+    - _Requirements: 6.3_
+
+- [ ] 2. Implement AWS storage infrastructure
+  - [ ] 2.1 Create DynamoDB table configuration
+    - Write `dynamodb.tf` with chat_history table
+    - Define partition key (chatId) and sort key (timestamp)
+    - Configure on-demand capacity mode
+    - _Requirements: 4.1, 6.1_
+  - [ ] 2.2 Create S3 bucket configuration
+    - Write `s3.tf` with bucket for frontend and diagrams
+    - Configure bucket policy for CloudFront access
+    - Enable static website hosting
+    - _Requirements: 3.1, 3.2, 6.4_
+  - [ ]* 2.3 Write property test for S3 storage round trip
+    - **Property 5: S3 Storage Round Trip**
+    - Test that saving and retrieving Mermaid code returns identical content
+    - **Validates: Requirements 3.1, 3.2**
+
+- [ ] 3. Implement API Gateway and Lambda infrastructure
+  - [ ] 3.1 Create API Gateway REST API configuration
+    - Write `api_gateway.tf` with REST API definition
+    - Define routes: POST /api/diagram/generate, GET /api/chat/history, POST /api/chat/save
+    - Configure CORS for all origins
+    - _Requirements: 6.5, 7.1, 7.2, 7.3_
+  - [ ] 3.2 Create Lambda function infrastructure
+    - Write `lambda.tf` with three Lambda function definitions
+    - Configure timeout (60s for generate, 10s for others) and memory
+    - Set up Lambda layers for shared dependencies
+    - _Requirements: 6.1, 6.3_
+  - [ ] 3.3 Create CloudFront distribution configuration
+    - Write `cloudfront.tf` with distribution for S3 origin
+    - Configure caching behaviors for frontend and diagrams
+    - Enable HTTPS with default certificate
+    - _Requirements: 6.4, 8.2_
+
+- [ ] 4. Checkpoint - Verify Terraform infrastructure
+  - Ensure all tests pass, ask the user if questions arise.
+  - Run `terraform init` and `terraform plan` to verify configuration
+  - _Requirements: 6.1, 6.2_
+
+- [ ] 5. Implement backend Lambda functions - Core logic
+  - [ ] 5.1 Create shared utilities module
+    - Create `src/backend/shared/utils.py` with common functions
+    - Implement UUID generation, timestamp helpers
+    - Create `src/backend/shared/aws_helpers.py` for DynamoDB and S3 operations
+    - _Requirements: 4.1, 3.1_
+  - [ ] 5.2 Implement LLM prompt builder
+    - Create `src/backend/lambda_functions/generate_diagram/prompt_builder.py`
+    - Build system prompts with Mermaid syntax rules for each diagram type
+    - Include diagram-type-specific instructions (graph TD, erDiagram, sequenceDiagram)
+    - _Requirements: 5.2, 10.1, 10.2, 10.3, 10.4_
+  - [ ]* 5.3 Write property test for system prompt construction
+    - **Property 10: System Prompt Construction**
+    - Test that prompts contain diagram-type-specific Mermaid syntax instructions
+    - **Validates: Requirements 5.2, 10.1**
+  - [ ] 5.4 Implement Mermaid code extractor
+    - Create extraction function to parse ```mermaid code blocks from LLM response
+    - Handle multiple code blocks, return first valid one
+    - _Requirements: 5.3, 10.5_
+  - [ ]* 5.5 Write property test for Mermaid code extraction
+    - **Property 11: Mermaid Code Extraction**
+    - Test extraction from various response formats with mermaid delimiters
+    - **Validates: Requirements 5.3, 10.5**
+
+- [ ] 6. Implement generate_diagram Lambda function
+  - [ ] 6.1 Create main Lambda handler for diagram generation
+    - Create `src/backend/lambda_functions/generate_diagram/lambda_function.py`
+    - Implement request validation for userPrompt and diagramType
+    - Call LLM API with constructed prompt
+    - Extract Mermaid code from response
+    - _Requirements: 2.1, 5.1, 5.2, 5.3, 7.1_
+  - [ ] 6.2 Implement Mermaid validation
+    - Create validation function to check Mermaid syntax
+    - Return error response for invalid code
+    - _Requirements: 2.5, 5.4_
+  - [ ]* 6.3 Write property test for Mermaid code validity
+    - **Property 2: Mermaid Code Validity**
+    - Test that generated code passes syntax validation
+    - **Validates: Requirements 2.1, 2.5**
+  - [ ]* 6.4 Write property test for invalid code error handling
+    - **Property 12: Invalid Code Error Handling**
+    - Test that invalid Mermaid returns 400 with error details
+    - **Validates: Requirements 5.4, 7.4**
+  - [ ] 6.5 Implement S3 storage for diagrams
+    - Save Mermaid code as markdown file to S3
+    - Generate PNG image and save to S3
+    - Return CloudFront URLs in response
+    - _Requirements: 3.1, 3.2, 7.1_
+  - [ ]* 6.6 Write property test for generate API response format
+    - **Property 13: Generate API Response Format**
+    - Test response contains chatId, mermaidCode, imageUrl, markdownUrl
+    - **Validates: Requirements 7.1**
+
+- [ ] 7. Implement chat_crud Lambda function
+  - [ ] 7.1 Create Lambda handler for saving chat messages
+    - Create `src/backend/lambda_functions/chat_crud/lambda_function.py`
+    - Implement save_message function with DynamoDB PutItem
+    - Generate chatId if not provided, add timestamp
+    - _Requirements: 4.1, 7.3_
+  - [ ]* 7.2 Write property test for chat persistence round trip
+    - **Property 7: Chat Persistence Round Trip**
+    - Test that saved messages are retrievable with matching content
+    - **Validates: Requirements 4.1, 4.2**
+  - [ ]* 7.3 Write property test for save API confirmation
+    - **Property 15: Save API Confirmation**
+    - Test response contains success:true and chatId
+    - **Validates: Requirements 7.3**
+
+- [ ] 8. Implement get_history Lambda function
+  - [ ] 8.1 Create Lambda handler for retrieving chat history
+    - Create `src/backend/lambda_functions/get_history/lambda_function.py`
+    - Implement query with pagination support
+    - Sort by timestamp descending
+    - _Requirements: 4.2, 4.4, 7.2_
+  - [ ]* 8.2 Write property test for pagination limit compliance
+    - **Property 9: Pagination Limit Compliance**
+    - Test that results count never exceeds limit parameter
+    - **Validates: Requirements 4.4**
+  - [ ]* 8.3 Write property test for history API response format
+    - **Property 14: History API Response Format**
+    - Test response contains chats array and count field
+    - **Validates: Requirements 7.2**
+
+- [ ] 9. Checkpoint - Backend Lambda functions
+  - Ensure all tests pass, ask the user if questions arise.
+  - Package Lambda functions and verify deployment
+  - _Requirements: 5.1, 7.1, 7.2, 7.3_
+
+- [ ] 10. Initialize React frontend project
+  - [ ] 10.1 Create React TypeScript project with Vite
+    - Initialize project in `src/frontend/` with Vite + React + TypeScript
+    - Install dependencies: react-flow, axios, tailwindcss
+    - Configure Tailwind CSS
+    - _Requirements: 8.1_
+  - [ ] 10.2 Create TypeScript type definitions
+    - Create `src/frontend/src/types/index.ts`
+    - Define ChatMessage, DiagramType, API request/response interfaces
+    - _Requirements: 1.1, 2.4_
+  - [ ] 10.3 Create API service module
+    - Create `src/frontend/src/services/api.ts`
+    - Implement generateDiagram, getChatHistory, saveChat functions
+    - Configure Axios with base URL from environment
+    - _Requirements: 7.1, 7.2, 7.3_
+  - [ ]* 10.4 Write property test for diagram type context inclusion
+    - **Property 1: Diagram Type Context Inclusion**
+    - Test that API requests include selected diagram type
+    - **Validates: Requirements 1.4**
+
+- [ ] 11. Implement frontend components - Chat interface
+  - [ ] 11.1 Create Header component
+    - Create `src/frontend/src/components/Header.tsx`
+    - Display application title
+    - _Requirements: 1.1_
+  - [ ] 11.2 Create DiagramTypeSelector component
+    - Create `src/frontend/src/components/DiagramTypeSelector.tsx`
+    - Implement dropdown with all diagram types
+    - Handle selection change events
+    - _Requirements: 1.4, 2.4_
+  - [ ] 11.3 Create ChatInput component
+    - Create `src/frontend/src/components/ChatInput.tsx`
+    - Implement text input with submit button
+    - Show loading indicator during API calls
+    - _Requirements: 1.2, 1.3_
+  - [ ] 11.4 Create ChatMessage components
+    - Create `src/frontend/src/components/ChatMessage.tsx`
+    - Implement UserMessage and AIMessage variants
+    - Display message content with proper styling
+    - _Requirements: 1.3, 2.2_
+
+- [ ] 12. Implement frontend components - Diagram rendering
+  - [ ] 12.1 Create MermaidCodePreview component
+    - Create `src/frontend/src/components/MermaidCodePreview.tsx`
+    - Display Mermaid code in syntax-highlighted code block
+    - _Requirements: 2.2_
+  - [ ]* 12.2 Write property test for Mermaid code display
+    - **Property 3: Mermaid Code Display**
+    - Test that Mermaid code renders in code block element
+    - **Validates: Requirements 2.2**
+  - [ ] 12.3 Create Mermaid parser utility
+    - Create `src/frontend/src/utils/mermaidParser.ts`
+    - Parse Mermaid code into React Flow nodes and edges
+    - Handle flowchart, sequence, ERD diagram types
+    - _Requirements: 9.1_
+  - [ ]* 12.4 Write property test for Mermaid to React Flow conversion
+    - **Property 4: Mermaid to React Flow Conversion**
+    - Test that valid Mermaid produces non-empty nodes/edges
+    - **Validates: Requirements 2.3, 9.1**
+  - [ ] 12.5 Create DiagramRenderer component
+    - Create `src/frontend/src/components/DiagramRenderer.tsx`
+    - Integrate React Flow with zoom and pan controls
+    - Apply automatic layout for nodes
+    - _Requirements: 2.3, 9.2, 9.3, 9.4_
+  - [ ]* 12.6 Write property test for node layout non-overlap
+    - **Property 16: Node Layout Non-Overlap**
+    - Test that no two nodes share same coordinates
+    - **Validates: Requirements 9.4**
+
+- [ ] 13. Implement frontend components - Download and history
+  - [ ] 13.1 Create DownloadButtons component
+    - Create `src/frontend/src/components/DownloadButtons.tsx`
+    - Implement PNG and markdown download buttons
+    - Trigger file downloads from S3 URLs
+    - _Requirements: 3.3, 3.4, 3.5_
+  - [ ]* 13.2 Write property test for download button presence
+    - **Property 6: Download Button Presence**
+    - Test that completed diagrams show both download buttons
+    - **Validates: Requirements 3.3, 3.4**
+  - [ ] 13.3 Create ChatContainer component
+    - Create `src/frontend/src/components/ChatContainer.tsx`
+    - Compose ChatMessages, ChatInput components
+    - Manage chat state and API interactions
+    - _Requirements: 1.1, 1.2, 1.3_
+  - [ ] 13.4 Implement chat history loading
+    - Load previous chat history on app mount
+    - Re-render diagrams from stored Mermaid code
+    - _Requirements: 4.2, 4.3_
+  - [ ]* 13.5 Write property test for diagram re-rendering consistency
+    - **Property 8: Diagram Re-rendering Consistency**
+    - Test that stored Mermaid code renders consistently
+    - **Validates: Requirements 4.3**
+
+- [ ] 14. Implement main App component and error handling
+  - [ ] 14.1 Create main App component
+    - Create `src/frontend/src/App.tsx`
+    - Compose Header, DiagramTypeSelector, ChatContainer
+    - Manage global state for diagram type selection
+    - _Requirements: 1.1, 1.4_
+  - [ ] 14.2 Implement error handling UI
+    - Display user-friendly error messages
+    - Add retry functionality for failed requests
+    - _Requirements: 1.5_
+
+- [ ] 15. Checkpoint - Frontend application
+  - Ensure all tests pass, ask the user if questions arise.
+  - Run `npm run build` to verify production build
+  - _Requirements: 8.1_
+
+- [ ] 16. Create deployment scripts and documentation
+  - [ ] 16.1 Create deployment script
+    - Create `infrastructure/scripts/deploy.sh`
+    - Implement one-command deployment (terraform + frontend upload)
+    - Add CloudFront cache invalidation
+    - _Requirements: 6.1, 6.2, 8.4_
+  - [ ] 16.2 Create README with deployment instructions
+    - Document prerequisites (AWS CLI, Terraform, Node.js)
+    - Document environment variables (LLM API key)
+    - Document deployment steps
+    - _Requirements: 6.1_
+  - [ ] 16.3 Create IAM user guide for Terraform
+    - Document required IAM permissions for Terraform user
+    - Provide policy JSON for deployment user
+    - _Requirements: 6.3_
+
+- [ ] 17. Final integration and deployment
+  - [ ] 17.1 Deploy infrastructure with Terraform
+    - Run `terraform init` and `terraform apply`
+    - Verify all AWS resources created
+    - _Requirements: 6.1, 6.2_
+  - [ ] 17.2 Deploy Lambda functions
+    - Package Lambda functions with dependencies
+    - Upload to AWS Lambda
+    - _Requirements: 6.1_
+  - [ ] 17.3 Build and deploy frontend
+    - Run `npm run build`
+    - Upload to S3 bucket
+    - Invalidate CloudFront cache
+    - _Requirements: 8.1, 8.2, 8.4_
+  - [ ] 17.4 End-to-end verification
+    - Test complete user flow: open app, generate diagram, download
+    - Verify chat history persistence
+    - _Requirements: 1.1, 2.1, 3.5, 4.2_
+
+- [ ] 18. Final Checkpoint - Complete system verification
+  - Ensure all tests pass, ask the user if questions arise.
+  - Verify CloudFront URL is accessible
+  - Verify all API endpoints respond correctly
+  - _Requirements: All_
