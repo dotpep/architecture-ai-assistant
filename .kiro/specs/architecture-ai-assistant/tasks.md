@@ -79,10 +79,53 @@
     - Enable HTTPS with default certificate
     - _Requirements: 6.4, 8.2_
 
-- [ ] 4. Checkpoint - Verify Terraform infrastructure
+- [x] 4. Checkpoint - Verify Terraform infrastructure
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
   - Run `terraform init` and `terraform plan` to verify configuration
   - _Requirements: 6.1, 6.2_
+
+- [-] 4.5 Deploy infrastructure and create integration test placeholders
+
+
+
+  - [-] 4.5.1 Deploy Terraform infrastructure
+
+    - Run `terraform apply` to create all AWS resources
+    - Capture outputs (CloudFront URL, API Gateway URL, DynamoDB table name, S3 bucket name)
+    - Verify all resources created successfully in AWS console
+    - _Requirements: 6.1, 6.2_
+  - [ ] 4.5.2 Create minimal Lambda placeholder for DynamoDB CRUD test
+    - Create `src/backend/lambda_functions/test_dynamodb/lambda_function.py`
+    - Implement simple put_item and get_item operations to DynamoDB
+    - Test that IAM policies allow DynamoDB access
+    - _Requirements: 4.1, 6.3_
+  - [ ] 4.5.3 Create minimal Lambda placeholder for S3 upload test
+    - Create `src/backend/lambda_functions/test_s3/lambda_function.py`
+    - Implement simple put_object operation to S3
+    - Test that IAM policies allow S3 access
+    - _Requirements: 3.1, 6.3_
+  - [ ] 4.5.4 Create minimal React frontend test app
+    - Create basic React app in `src/frontend/` with Vite
+    - Create simple component that calls API Gateway endpoints
+    - Test API Gateway connectivity and CORS configuration
+    - _Requirements: 1.1, 6.5, 7.1, 7.2, 7.3_
+  - [ ] 4.5.5 Deploy test Lambda functions and frontend
+    - Package and upload test Lambda functions
+    - Build and deploy test React app to S3
+    - Verify CloudFront serves frontend without errors
+    - _Requirements: 6.1, 8.2_
+  - [ ] 4.5.6 Run integration tests
+    - Test Lambda → DynamoDB connectivity (CRUD operations)
+    - Test Lambda → S3 connectivity (file upload/retrieval)
+    - Test Frontend → API Gateway → Lambda flow (no CORS errors)
+    - Verify IAM policies are working correctly
+    - Verify S3 and CloudFront serving frontend properly
+    - _Requirements: 6.3, 6.5, 8.2_
 
 - [ ] 5. Implement backend Lambda functions - Core logic
   - [ ] 5.1 Create shared utilities module
