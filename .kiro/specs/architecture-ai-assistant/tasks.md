@@ -26,13 +26,22 @@
     - Define least-privilege policies for DynamoDB, S3, CloudWatch
     - _Requirements: 6.3_
 
-- [ ] 2. Implement AWS storage infrastructure
-  - [ ] 2.1 Create DynamoDB table configuration
+- [x] 2. Implement AWS storage infrastructure
+
+
+
+
+
+  - [x] 2.1 Create DynamoDB table configuration
+
+
     - Write `dynamodb.tf` with chat_history table
     - Define partition key (chatId) and sort key (timestamp)
     - Configure on-demand capacity mode
     - _Requirements: 4.1, 6.1_
-  - [ ] 2.2 Create S3 bucket configuration
+
+  - [x] 2.2 Create S3 bucket configuration
+
     - Write `s3.tf` with bucket for frontend and diagrams
     - Configure bucket policy for CloudFront access
     - Enable static website hosting
