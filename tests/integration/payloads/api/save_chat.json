@@ -1,0 +1,5 @@
+{
+  "chatId": "integration-test-chat-1",
+  "userMessage": "Create a database schema diagram",
+  "diagramType": "erdiagram"
+}
