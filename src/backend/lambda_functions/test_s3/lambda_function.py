@@ -28,7 +28,7 @@ def handler(event, context):
         
         if operation == 'PUT':
             # Test PUT operation
-            file_key = body.get('fileKey', f'test/test-{int(time.time())}.txt')
+            file_key = body.get('fileKey', f'diagrams/test-{int(time.time())}.txt')
             content = body.get('content', 'Test content from Lambda')
             
             # Upload to S3
