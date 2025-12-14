@@ -1,0 +1,79 @@
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  color: #646cff;
+  margin-bottom: 1rem;
+}
+
+.test-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #646cff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+button:hover:not(:disabled) {
+  background-color: #535bf2;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.test-results {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.test-results h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.test-results ul {
+  list-style: none;
+  padding: 0;
+}
+
+.test-results li {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.test-results li.success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.test-results li.error {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.test-results small {
+  display: block;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
