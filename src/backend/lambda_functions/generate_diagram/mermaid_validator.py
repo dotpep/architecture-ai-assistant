@@ -32,8 +32,10 @@ class MermaidValidator:
             r'^\s*stateDiagram-v2'
         ],
         'architecture': [
-            r'^\s*graph\s+(TD|LR|TB|RL|BT)',
-            r'^\s*flowchart\s+(TD|LR|TB|RL|BT)'
+            r'^\s*C4Context',
+            r'^\s*C4Container',
+            r'^\s*C4Component',
+            r'^\s*C4Deployment'
         ],
         'dfd': [
             r'^\s*graph\s+(TD|LR|TB|RL|BT)',
@@ -112,8 +114,10 @@ class MermaidValidator:
         Returns:
             Tuple of (is_valid, error_message)
         """
-        if diagram_type in ['flowchart', 'architecture', 'dfd']:
+        if diagram_type in ['flowchart', 'dfd']:
             return MermaidValidator._validate_flowchart(code)
+        elif diagram_type == 'architecture':
+            return MermaidValidator._validate_c4(code)
         elif diagram_type == 'erdiagram':
             return MermaidValidator._validate_erdiagram(code)
         elif diagram_type == 'sequence':
@@ -201,6 +205,29 @@ class MermaidValidator:
         
         if not (has_state or has_transition or has_start_end):
             return False, "State diagram must contain at least one state or transition"
+        
+        return True, None
+    
+    @staticmethod
+    def _validate_c4(code: str) -> Tuple[bool, Optional[str]]:
+        """Validate C4 architecture diagram syntax."""
+        # Check for at least one C4 element (System, Container, Component, Person, etc.)
+        has_elements = bool(re.search(
+            r'(System|Container|Component|Person|Database|Queue|Rel)\s*\(',
+            code,
+            re.IGNORECASE
+        ))
+        
+        if not has_elements:
+            return False, "C4 diagram must contain at least one element (System, Container, Component, Person, etc.)"
+        
+        # Check for balanced parentheses
+        if code.count('(') != code.count(')'):
+            return False, "Unbalanced parentheses in C4 diagram"
+        
+        # Check for balanced quotes
+        if code.count('"') % 2 != 0:
+            return False, "Unbalanced quotes in C4 diagram"
         
         return True, None
 
