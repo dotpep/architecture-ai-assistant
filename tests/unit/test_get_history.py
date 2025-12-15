@@ -13,12 +13,26 @@ sys.modules['boto3'] = MagicMock()
 sys.modules['botocore'] = MagicMock()
 sys.modules['botocore.exceptions'] = MagicMock()
 
-# Add src paths
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src/backend/lambda_functions/get_history'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
+# Add src paths - get_history path FIRST so it takes precedence
+get_history_path = os.path.join(os.path.dirname(__file__), '../../src/backend/lambda_functions/get_history')
+shared_path = os.path.join(os.path.dirname(__file__), '../../src/backend/shared')
 
-import lambda_function
-from lambda_function import lambda_handler, get_history, encode_next_token, decode_next_token
+# Clear sys.path of any conflicting lambda_function modules
+sys.path = [p for p in sys.path if 'lambda_functions' not in p]
+
+sys.path.insert(0, get_history_path)
+sys.path.insert(1, shared_path)
+
+# Import with explicit module name to avoid conflicts
+import importlib.util
+spec = importlib.util.spec_from_file_location("get_history_lambda", os.path.join(get_history_path, "lambda_function.py"))
+lambda_function = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(lambda_function)
+
+lambda_handler = lambda_function.lambda_handler
+get_history = lambda_function.get_history
+encode_next_token = lambda_function.encode_next_token
+decode_next_token = lambda_function.decode_next_token
 
 
 class TestGetHistory:
@@ -235,7 +249,7 @@ class TestGetHistory:
     
     def test_lambda_handler_get_method(self):
         """Test lambda_handler routes GET requests correctly."""
-        with patch('lambda_function.DynamoDBHelper') as mock_helper_class:
+        with patch.object(lambda_function, 'DynamoDBHelper') as mock_helper_class:
             mock_helper = Mock()
             mock_helper_class.return_value = mock_helper
             mock_helper.scan_all.return_value = {

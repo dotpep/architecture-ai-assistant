@@ -16,15 +16,49 @@ sys.modules['botocore.exceptions'] = MagicMock()
 
 # Add backend paths to sys.path
 backend_path = os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend')
-sys.path.insert(0, backend_path)
-sys.path.insert(0, os.path.join(backend_path, 'shared'))
-sys.path.insert(0, os.path.join(backend_path, 'lambda_functions', 'generate_diagram'))
+generate_diagram_path = os.path.join(backend_path, 'lambda_functions', 'generate_diagram')
+shared_path = os.path.join(backend_path, 'shared')
+
+# Clear sys.path of any conflicting lambda_function modules
+sys.path = [p for p in sys.path if 'lambda_functions' not in p]
+
+# Insert generate_diagram path FIRST so it takes precedence
+sys.path.insert(0, generate_diagram_path)
+sys.path.insert(1, shared_path)
 
 # Import after path setup
-from lambda_function import validate_request, create_error_response, create_success_response
-from mermaid_validator import validate_mermaid_code, MermaidValidator
-from mermaid_extractor import extract_mermaid_code, clean_mermaid_code
-from prompt_builder import build_complete_prompt, get_supported_diagram_types
+import importlib.util
+
+# Import lambda_function
+spec = importlib.util.spec_from_file_location("generate_diagram_lambda", os.path.join(generate_diagram_path, "lambda_function.py"))
+lambda_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(lambda_module)
+
+validate_request = lambda_module.validate_request
+create_error_response = lambda_module.create_error_response
+create_success_response = lambda_module.create_success_response
+
+# Import other modules
+spec = importlib.util.spec_from_file_location("mermaid_validator", os.path.join(generate_diagram_path, "mermaid_validator.py"))
+mermaid_validator_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mermaid_validator_module)
+
+validate_mermaid_code = mermaid_validator_module.validate_mermaid_code
+MermaidValidator = mermaid_validator_module.MermaidValidator
+
+spec = importlib.util.spec_from_file_location("mermaid_extractor", os.path.join(generate_diagram_path, "mermaid_extractor.py"))
+mermaid_extractor_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mermaid_extractor_module)
+
+extract_mermaid_code = mermaid_extractor_module.extract_mermaid_code
+clean_mermaid_code = mermaid_extractor_module.clean_mermaid_code
+
+spec = importlib.util.spec_from_file_location("prompt_builder", os.path.join(generate_diagram_path, "prompt_builder.py"))
+prompt_builder_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(prompt_builder_module)
+
+build_complete_prompt = prompt_builder_module.build_complete_prompt
+get_supported_diagram_types = prompt_builder_module.get_supported_diagram_types
 
 
 class TestRequestValidation:
