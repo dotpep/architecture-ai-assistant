@@ -19,8 +19,15 @@
     - Each existing message becomes its own session with one message
     - _Requirements: 2.1_
 
-- [ ] 2. Implement backend session service
-  - [ ] 2.1 Create session utility functions in shared module
+- [x] 2. Implement backend session service
+
+
+
+
+
+  - [x] 2.1 Create session utility functions in shared module
+
+
     - Add `generate_session_id()` function to `src/backend/shared/utils.py`
     - Add `extract_session_title(message: str, max_length: int = 50)` function
     - Add session validation helpers
@@ -31,7 +38,9 @@
   - [ ]* 2.3 Write property test for title extraction
     - **Property 3: Title Extraction Correctness**
     - **Validates: Requirements 4.1, 4.2**
-  - [ ] 2.4 Create session CRUD Lambda function
+  - [x] 2.4 Create session CRUD Lambda function
+
+
     - Create `src/backend/lambda_functions/session_crud/lambda_function.py`
     - Implement POST handler for creating sessions
     - Implement GET handler for listing sessions

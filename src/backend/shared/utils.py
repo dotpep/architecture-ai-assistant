@@ -90,3 +90,65 @@ def sanitize_s3_key(key: str) -> str:
     # Remove or replace characters that might cause issues in S3 keys
     sanitized = key.replace(' ', '_').replace('/', '_')
     return sanitized
+
+
+def generate_session_id() -> str:
+    """
+    Generate a unique session ID using UUID4.
+    
+    Returns:
+        str: A unique UUID string for a session
+    """
+    return str(uuid.uuid4())
+
+
+def extract_session_title(message: str, max_length: int = 50) -> str:
+    """
+    Extract a session title from the first user message.
+    Truncates to max_length characters and appends ellipsis if needed.
+    
+    Args:
+        message: The user message to extract title from
+        max_length: Maximum length of the title (default: 50)
+        
+    Returns:
+        str: Extracted and potentially truncated session title
+    """
+    if not message:
+        return "New Chat"
+    
+    # Strip whitespace and get first max_length characters
+    cleaned_message = message.strip()
+    
+    if len(cleaned_message) <= max_length:
+        return cleaned_message
+    
+    # Truncate and add ellipsis
+    return cleaned_message[:max_length] + "..."
+
+
+def validate_session_id(session_id: str) -> bool:
+    """
+    Validate if the provided session ID is a valid UUID format.
+    
+    Args:
+        session_id: The session ID to validate
+        
+    Returns:
+        bool: True if valid UUID format, False otherwise
+    """
+    try:
+        uuid.UUID(session_id)
+        return True
+    except (ValueError, AttributeError, TypeError):
+        return False
+
+
+def generate_message_id() -> str:
+    """
+    Generate a unique message ID using UUID4.
+    
+    Returns:
+        str: A unique UUID string for a message
+    """
+    return str(uuid.uuid4())
