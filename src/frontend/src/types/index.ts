@@ -41,6 +41,7 @@ export interface ChatMessage {
 export interface GenerateDiagramRequest {
   userPrompt: string;
   diagramType: DiagramType;
+  sessionId?: string;
 }
 
 /**
@@ -62,6 +63,7 @@ export interface SaveChatRequest {
   chatId: string;
   userMessage: string;
   diagramType: DiagramType;
+  sessionId?: string;
 }
 
 /**
