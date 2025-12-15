@@ -154,32 +154,40 @@ Generate ONLY valid Mermaid code wrapped in ```mermaid code blocks.
 """,
     
     'architecture': """
-Generate a Mermaid C4 architecture diagram using the following syntax:
+Generate a Mermaid flowchart diagram for high-level system architecture using the following syntax:
 
 **Syntax Rules:**
-- Start with `C4Context` for system context, `C4Container` for container view, or `C4Component` for component view
-- Define systems/containers/components with: `System(alias, "Name", "Description")`
-- Define relationships with: `Rel(from, to, "Label")`
-- Use `System_Ext()` for external systems
-- Use `Person()` for users/actors
-- Use `Container()` for application containers
-- Use `Component()` for components within containers
-- Use `Database()` for data stores
-- Use `Queue()` for message queues
+- Start with `graph TD` (top-down) or `graph LR` (left-right)
+- Use subgraphs to represent system layers or components
+- Define nodes for services, databases, external systems
+- Use descriptive labels and clear connections
+- Show data flow with labeled arrows
 
 **Example:**
 ```mermaid
-C4Context
-    title Simple E-Commerce Architecture
+graph TD
+    subgraph "Frontend Layer"
+        UI[Web UI]
+        Mobile[Mobile App]
+    end
     
-    Person(user, "Customer", "A customer using the e-commerce platform")
-    System(ecom, "E-Commerce System", "Provides online shopping capabilities")
-    System_Ext(payment, "Payment Gateway", "Processes payments")
-    System_Ext(email, "Email Service", "Sends notifications")
+    subgraph "Backend Layer"
+        API[API Gateway]
+        Auth[Auth Service]
+        BL[Business Logic]
+    end
     
-    Rel(user, ecom, "Uses")
-    Rel(ecom, payment, "Processes payments via")
-    Rel(ecom, email, "Sends emails via")
+    subgraph "Data Layer"
+        DB[(Database)]
+        Cache[(Cache)]
+    end
+    
+    UI --> API
+    Mobile --> API
+    API --> Auth
+    API --> BL
+    BL --> DB
+    BL --> Cache
 ```
 
 Generate ONLY valid Mermaid code wrapped in ```mermaid code blocks.

@@ -81,6 +81,32 @@ resource "aws_api_gateway_integration" "diagram_generate_post" {
   uri                     = aws_lambda_function.generate_diagram.invoke_arn
 }
 
+# Method response for diagram generation POST
+resource "aws_api_gateway_method_response" "diagram_generate_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.diagram_generate.id
+  http_method = aws_api_gateway_method.diagram_generate_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# Integration response for diagram generation POST
+resource "aws_api_gateway_integration_response" "diagram_generate_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.diagram_generate.id
+  http_method = aws_api_gateway_method.diagram_generate_post.http_method
+  status_code = aws_api_gateway_method_response.diagram_generate_post_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+}
+
+
+
 # CORS OPTIONS for diagram/generate
 resource "aws_api_gateway_method" "diagram_generate_options" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
@@ -154,6 +180,30 @@ resource "aws_api_gateway_integration" "chat_history_get" {
   uri                     = aws_lambda_function.get_history.invoke_arn
 }
 
+# Method response for chat history GET
+resource "aws_api_gateway_method_response" "chat_history_get_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.chat_history.id
+  http_method = aws_api_gateway_method.chat_history_get.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# Integration response for chat history GET
+resource "aws_api_gateway_integration_response" "chat_history_get_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.chat_history.id
+  http_method = aws_api_gateway_method.chat_history_get.http_method
+  status_code = aws_api_gateway_method_response.chat_history_get_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+}
+
 # CORS OPTIONS for chat/history
 resource "aws_api_gateway_method" "chat_history_options" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
@@ -225,6 +275,30 @@ resource "aws_api_gateway_integration" "chat_save_post" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.chat_crud.invoke_arn
+}
+
+# Method response for chat save POST
+resource "aws_api_gateway_method_response" "chat_save_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.chat_save.id
+  http_method = aws_api_gateway_method.chat_save_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# Integration response for chat save POST
+resource "aws_api_gateway_integration_response" "chat_save_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.chat_save.id
+  http_method = aws_api_gateway_method.chat_save_post.http_method
+  status_code = aws_api_gateway_method_response.chat_save_post_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
 }
 
 # CORS OPTIONS for chat/save
@@ -330,6 +404,12 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_integration.diagram_generate_post.id,
       aws_api_gateway_integration.chat_history_get.id,
       aws_api_gateway_integration.chat_save_post.id,
+      aws_api_gateway_method_response.diagram_generate_post_200.id,
+      aws_api_gateway_method_response.chat_history_get_200.id,
+      aws_api_gateway_method_response.chat_save_post_200.id,
+      aws_api_gateway_integration_response.diagram_generate_post_200.id,
+      aws_api_gateway_integration_response.chat_history_get_200.id,
+      aws_api_gateway_integration_response.chat_save_post_200.id,
     ]))
   }
 
@@ -347,6 +427,12 @@ resource "aws_api_gateway_deployment" "main" {
     aws_api_gateway_method.diagram_generate_options,
     aws_api_gateway_method.chat_history_options,
     aws_api_gateway_method.chat_save_options,
+    aws_api_gateway_method_response.diagram_generate_post_200,
+    aws_api_gateway_method_response.chat_history_get_200,
+    aws_api_gateway_method_response.chat_save_post_200,
+    aws_api_gateway_integration_response.diagram_generate_post_200,
+    aws_api_gateway_integration_response.chat_history_get_200,
+    aws_api_gateway_integration_response.chat_save_post_200,
   ]
 }
 

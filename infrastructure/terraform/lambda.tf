@@ -5,23 +5,12 @@
 # Lambda Layer for Shared Dependencies
 # ============================================
 
-# Placeholder for Lambda layer (will be replaced during deployment)
-data "archive_file" "lambda_layer_placeholder" {
-  type        = "zip"
-  output_path = "${path.module}/lambda_layer_placeholder.zip"
-
-  source {
-    content  = "# Placeholder for shared dependencies"
-    filename = "python/placeholder.py"
-  }
-}
-
 # Lambda layer for shared Python dependencies
 resource "aws_lambda_layer_version" "shared_dependencies" {
   layer_name          = "${var.project_name}-shared-deps-${var.environment}"
-  description         = "Shared Python dependencies for Lambda functions"
-  filename            = data.archive_file.lambda_layer_placeholder.output_path
-  source_code_hash    = data.archive_file.lambda_layer_placeholder.output_base64sha256
+  description         = "Shared Python dependencies for Lambda functions (requests)"
+  filename            = "${path.module}/lambda_layer.zip"
+  source_code_hash    = filebase64sha256("${path.module}/lambda_layer.zip")
   compatible_runtimes = ["python3.11"]
 
   lifecycle {
