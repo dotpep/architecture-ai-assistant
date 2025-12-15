@@ -224,7 +224,8 @@ class S3Helper:
         """
         key = f"diagrams/{chat_id}.md"
         markdown_content = f"```mermaid\n{mermaid_code}\n```"
-        return self.put_object(key, markdown_content, 'text/markdown')
+        # Use text/plain for better compatibility with browsers and CloudFront
+        return self.put_object(key, markdown_content, 'text/plain; charset=utf-8')
     
     def put_diagram_image(self, chat_id: str, image_data: bytes) -> str:
         """

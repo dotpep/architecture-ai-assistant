@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     domain_name              = aws_s3_bucket.main.bucket_regional_domain_name
     origin_id                = "S3-diagrams"
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
-    origin_path              = "/diagrams"
+    origin_path              = ""
   }
 
   # Default cache behavior for frontend (SPA)
@@ -126,21 +126,8 @@ resource "aws_cloudfront_distribution" "frontend" {
     compress               = true
   }
 
-  # Custom error response for SPA routing - 404 returns index.html
-  custom_error_response {
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 10
-  }
-
-  # Custom error response for SPA routing - 403 returns index.html
-  custom_error_response {
-    error_code            = 403
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 10
-  }
+  # Custom error responses are removed to prevent diagram files from being served as HTML
+  # The frontend SPA routing will be handled by the frontend application itself
 
   # No geographic restrictions
   restrictions {

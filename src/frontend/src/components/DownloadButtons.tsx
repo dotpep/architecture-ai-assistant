@@ -20,11 +20,30 @@ interface DownloadButtonsProps {
  */
 const downloadFile = async (url: string, filename: string): Promise<void> => {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*',
+      },
+      // Disable CORS mode to allow CloudFront to serve the file
+      mode: 'cors',
+    });
+    
     if (!response.ok) {
       throw new Error(`Failed to download: ${response.statusText}`);
     }
+    
     const blob = await response.blob();
+    
+    // Validate that we got the expected content type
+    const contentType = response.headers.get('content-type') || '';
+    console.log(`Downloaded content-type: ${contentType}, size: ${blob.size} bytes`);
+    
+    // Check if we got HTML instead of the expected file
+    if (blob.type === 'text/html' || contentType.includes('text/html')) {
+      console.warn('Warning: Received HTML content instead of file. This may indicate a CloudFront caching issue.');
+    }
+    
     const blobUrl = window.URL.createObjectURL(blob);
     
     const link = document.createElement('a');
