@@ -215,8 +215,15 @@
     - Test response contains chatId, mermaidCode, imageUrl, markdownUrl
     - **Validates: Requirements 7.1**
 
-- [ ] 7. Implement chat_crud Lambda function
-  - [ ] 7.1 Create Lambda handler for saving chat messages
+- [x] 7. Implement chat_crud Lambda function
+
+
+
+
+
+
+  - [x] 7.1 Create Lambda handler for saving chat messages
+
     - Create `src/backend/lambda_functions/chat_crud/lambda_function.py`
     - Implement save_message function with DynamoDB PutItem
     - Generate chatId if not provided, add timestamp
