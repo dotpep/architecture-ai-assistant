@@ -1,14 +1,13 @@
 /**
- * Main App Component - Redesigned UI
- * Modern layout with sidebar, pinned header, and improved UX
- * Requirements: 1.1, 1.4
+ * Main App Component - Session-based UI
+ * Modern layout with sidebar, pinned header, and session management
+ * Requirements: 1.1, 1.2, 1.3, 1.4
  */
 
 import React, { useState, useCallback } from 'react';
-import { DiagramType, ChatMessage } from './types';
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
-import ChatContainer from './components/ChatContainer';
+import { DiagramType } from './types';
+import { Sidebar, Header, ChatContainer } from './components';
+import { useSessionState } from './hooks/useSessionState';
 import './App.css';
 
 /**
@@ -75,35 +74,84 @@ class ErrorBoundary extends React.Component<
 const App: React.FC = () => {
   const [selectedDiagramType, setSelectedDiagramType] = useState<DiagramType>('flowchart');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [key, setKey] = useState(0);
+
+  // Session state management
+  const {
+    currentSessionId,
+    sessions,
+    isLoadingSessions,
+    createNewSession,
+    selectSession,
+    loadSessions,
+    updateSessionTitle,
+    clearError
+  } = useSessionState();
 
   const handleDiagramTypeChange = useCallback((type: DiagramType) => {
     setSelectedDiagramType(type);
   }, []);
 
-  const handleNewChat = useCallback(() => {
-    setCurrentChatId(null);
-    setKey((prev) => prev + 1);
-  }, []);
+  /**
+   * Handle new chat creation
+   * Requirements: 1.1, 1.2, 1.3 - Create new session and set as current
+   */
+  const handleNewChat = useCallback(async () => {
+    try {
+      clearError();
+      await createNewSession();
+      setKey((prev) => prev + 1); // Force ChatContainer re-render
+    } catch (error) {
+      console.error('Failed to create new session:', error);
+      // Error is handled by useSessionState hook
+    }
+  }, [createNewSession, clearError]);
 
-  const handleSelectChat = useCallback((chatId: string) => {
-    setCurrentChatId(chatId);
-  }, []);
+  /**
+   * Handle session selection
+   * Requirements: 1.3 - Session selection and navigation
+   */
+  const handleSelectSession = useCallback((sessionId: string) => {
+    selectSession(sessionId);
+  }, [selectSession]);
+
+  /**
+   * Handle session creation from ChatContainer
+   * Requirements: 1.2 - Create session when first message is sent
+   */
+  const handleSessionCreated = useCallback(async (_firstMessage: string) => {
+    try {
+      clearError();
+      await createNewSession();
+    } catch (error) {
+      console.error('Failed to create session from chat:', error);
+      // Error is handled by useSessionState hook
+    }
+  }, [createNewSession, clearError]);
+
+  /**
+   * Handle first message in session (update title)
+   * Requirements: 4.3 - Update session title after first message
+   */
+  const handleFirstMessage = useCallback(async (sessionId: string, title: string) => {
+    try {
+      await updateSessionTitle(sessionId, title);
+      // Reload sessions to get updated title
+      await loadSessions();
+    } catch (error) {
+      console.error('Failed to update session title:', error);
+      // Error is handled by useSessionState hook
+    }
+  }, [updateSessionTitle, loadSessions]);
 
   const handleErrorReset = useCallback(() => {
     setKey((prev) => prev + 1);
     setSelectedDiagramType('flowchart');
-    setCurrentChatId(null);
-  }, []);
+    clearError();
+  }, [clearError]);
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
-  }, []);
-
-  const handleChatHistoryUpdate = useCallback((messages: ChatMessage[]) => {
-    setChatHistory(messages);
   }, []);
 
   return (
@@ -123,9 +171,10 @@ const App: React.FC = () => {
           <Sidebar
             isOpen={sidebarOpen}
             onNewChat={handleNewChat}
-            onSelectChat={handleSelectChat}
-            currentChatId={currentChatId}
-            chatHistory={chatHistory}
+            onSelectSession={handleSelectSession}
+            currentSessionId={currentSessionId}
+            sessions={sessions}
+            isLoading={isLoadingSessions}
           />
 
           {/* Chat Area */}
@@ -133,8 +182,9 @@ const App: React.FC = () => {
             <ChatContainer
               key={key}
               selectedDiagramType={selectedDiagramType}
-              currentChatId={currentChatId}
-              onChatHistoryUpdate={handleChatHistoryUpdate}
+              currentSessionId={currentSessionId}
+              onSessionCreated={handleSessionCreated}
+              onFirstMessage={handleFirstMessage}
             />
           </main>
         </div>
