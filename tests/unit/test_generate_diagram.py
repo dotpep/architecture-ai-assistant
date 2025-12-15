@@ -9,6 +9,11 @@ import os
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
+# Mock boto3 before importing modules that use it
+sys.modules['boto3'] = MagicMock()
+sys.modules['botocore'] = MagicMock()
+sys.modules['botocore.exceptions'] = MagicMock()
+
 # Add backend paths to sys.path
 backend_path = os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend')
 sys.path.insert(0, backend_path)

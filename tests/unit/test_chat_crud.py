@@ -7,6 +7,11 @@ import sys
 import os
 from unittest.mock import Mock, patch, MagicMock
 
+# Mock boto3 before importing modules that use it
+sys.modules['boto3'] = MagicMock()
+sys.modules['botocore'] = MagicMock()
+sys.modules['botocore.exceptions'] = MagicMock()
+
 # Add backend modules to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src/backend/lambda_functions/chat_crud'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
