@@ -466,21 +466,38 @@
     - Provide policy JSON for deployment user
     - _Requirements: 6.3_
 
-- [ ] 17. Final integration and deployment
-  - [ ] 17.1 Deploy infrastructure with Terraform
+- [x] 17. Final integration and deployment
+
+
+
+
+  - [x] 17.1 Deploy infrastructure with Terraform
+
+
     - Run `terraform init` and `terraform apply`
     - Verify all AWS resources created
     - _Requirements: 6.1, 6.2_
-  - [ ] 17.2 Deploy Lambda functions
+  - [x] 17.2 Deploy Lambda functions
+
+
+
+
     - Package Lambda functions with dependencies
     - Upload to AWS Lambda
     - _Requirements: 6.1_
-  - [ ] 17.3 Build and deploy frontend
+
+
+  - [x] 17.3 Build and deploy frontend
+
+
     - Run `npm run build`
     - Upload to S3 bucket
     - Invalidate CloudFront cache
+
     - _Requirements: 8.1, 8.2, 8.4_
-  - [ ] 17.4 End-to-end verification
+
+  - [x] 17.4 End-to-end verification
+
     - Test complete user flow: open app, generate diagram, download
     - Verify chat history persistence
     - _Requirements: 1.1, 2.1, 3.5, 4.2_

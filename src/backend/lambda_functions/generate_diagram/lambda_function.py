@@ -186,7 +186,7 @@ def handler(event, context):
     Main Lambda handler for diagram generation.
     
     Args:
-        event: Lambda event object
+        event: Lambda event object from API Gateway
         context: Lambda context object
         
     Returns:

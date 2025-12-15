@@ -8,12 +8,40 @@ import os
 import sys
 import base64
 from typing import Dict, Any, Optional
+from decimal import Decimal
 
 # Add shared modules to path
 sys.path.append('/opt/python')  # Lambda layer path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../shared'))
 
 from aws_helpers import DynamoDBHelper
+
+
+class DecimalEncoder(json.JSONEncoder):
+    """Custom JSON encoder to handle Decimal objects from DynamoDB."""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            # Convert Decimal to int if it's a whole number, otherwise float
+            if obj % 1 == 0:
+                return int(obj)
+            else:
+                return float(obj)
+        return super().default(obj)
+
+
+def convert_decimals(obj):
+    """Recursively convert Decimal objects to int/float."""
+    if isinstance(obj, list):
+        return [convert_decimals(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        if obj % 1 == 0:
+            return int(obj)
+        else:
+            return float(obj)
+    else:
+        return obj
 
 
 def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -35,7 +63,7 @@ def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'GET, OPTIONS'
         },
-        'body': json.dumps(body)
+        'body': json.dumps(body, cls=DecimalEncoder)
     }
 
 
@@ -49,7 +77,9 @@ def encode_next_token(last_evaluated_key: Dict[str, Any]) -> str:
     Returns:
         str: Base64 encoded token
     """
-    json_str = json.dumps(last_evaluated_key)
+    # Convert Decimals before JSON encoding
+    converted_key = convert_decimals(last_evaluated_key)
+    json_str = json.dumps(converted_key)
     return base64.b64encode(json_str.encode()).decode()
 
 
@@ -110,6 +140,9 @@ def get_history(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[
         # Sort items by timestamp descending (in case scan doesn't maintain order)
         items = sorted(result['items'], key=lambda x: x.get('timestamp', 0), reverse=True)
         
+        # Convert Decimals to int/float for JSON serialization
+        items = convert_decimals(items)
+        
         # Prepare response
         response_body = {
             'chats': items,
@@ -127,11 +160,13 @@ def get_history(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[
     except ValueError as e:
         return create_response(400, {'error': f'Invalid parameter: {str(e)}'})
     except Exception as e:
+        import traceback
         print(f"Error retrieving history: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
         return create_response(500, {'error': 'Failed to retrieve chat history'})
 
 
-def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Main Lambda handler for retrieving chat history.
     

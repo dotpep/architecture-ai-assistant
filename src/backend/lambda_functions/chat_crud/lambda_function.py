@@ -132,7 +132,7 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         return create_response(500, {'error': 'Failed to save chat message'})
 
 
-def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Main Lambda handler for chat CRUD operations.
     
