@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage as ChatMessageType, DiagramType } from '../types';
-import { generateDiagram, getSessionMessages, saveChat, updateSessionTitle } from '../services/api';
+import { generateDiagram, getSessionMessages, updateSessionTitle } from '../services/api';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DownloadButtons from './DownloadButtons';
@@ -50,7 +50,22 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
         setIsLoadingHistory(true);
         setHistoryError(null);
         const response = await getSessionMessages(currentSessionId);
-        const sortedMessages = [...response.chats].sort((a, b) => a.timestamp - b.timestamp);
+        
+        // Fix status for loaded messages - if they have mermaidCode/imageUrl, they're completed
+        const fixedMessages = response.chats.map((msg: ChatMessageType) => {
+          // If message has diagram data, it's completed (regardless of stored status)
+          if (msg.mermaidCode && msg.imageUrl) {
+            return { ...msg, status: 'completed' as const };
+          }
+          // If message has no diagram data and status is pending, it might be a failed/incomplete request
+          // Mark as failed so user can retry
+          if (msg.status === 'pending' && !msg.mermaidCode) {
+            return { ...msg, status: 'failed' as const, aiResponse: 'This diagram generation was interrupted. Please retry.' };
+          }
+          return msg;
+        });
+        
+        const sortedMessages = [...fixedMessages].sort((a, b) => a.timestamp - b.timestamp);
         setMessages(sortedMessages);
       } catch (error) {
         console.error('Failed to load session messages:', error);
@@ -100,15 +115,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
     setIsLoading(true);
 
     try {
-      // Save message to session
-      await saveChat({ 
-        chatId: messageId, 
-        userMessage, 
-        diagramType: selectedDiagramType,
-        sessionId: currentSessionId 
-      });
-
-      // Generate diagram
+      // Generate diagram (this also saves the message to DynamoDB with completed status)
       const response = await generateDiagram({ 
         userPrompt: userMessage, 
         diagramType: selectedDiagramType,
