@@ -1,6 +1,6 @@
 /**
- * ChatInput Component
- * Text input with submit button for sending messages
+ * ChatInput Component - Redesigned
+ * Modern input with improved styling
  * Requirements: 1.2, 1.3
  */
 
@@ -22,7 +22,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea based on content
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -36,7 +35,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (trimmedMessage && !isLoading && !disabled) {
       onSubmit(trimmedMessage);
       setMessage('');
-      // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
@@ -44,7 +42,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Enter (without Shift)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -55,98 +52,64 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="flex items-end space-x-3 p-4 bg-white border-t border-gray-200">
-        {/* Text Input */}
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            disabled={isLoading || disabled}
-            rows={1}
+      <div className="p-4">
+        <div className="flex items-end gap-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-2 focus-within:border-indigo-500/50 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+          {/* Text Input */}
+          <div className="flex-1">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              disabled={isLoading || disabled}
+              rows={1}
+              className={`
+                w-full px-3 py-2.5 
+                bg-transparent border-0
+                resize-none overflow-hidden
+                focus:outline-none focus:ring-0
+                ${(isLoading || disabled) ? 'cursor-not-allowed opacity-50' : ''}
+                text-white placeholder-slate-500
+                text-sm
+              `}
+              aria-label="Message input"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitDisabled}
             className={`
-              w-full px-4 py-3 
-              border border-gray-300 rounded-lg
-              resize-none overflow-hidden
-              focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-              ${(isLoading || disabled) ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}
-              transition-colors duration-200
-              text-gray-900 placeholder-gray-400
+              flex items-center justify-center
+              p-3 rounded-xl
+              transition-all duration-200
+              ${isSubmitDisabled
+                ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40'
+              }
             `}
-            aria-label="Message input"
-          />
+            aria-label={isLoading ? 'Generating diagram...' : 'Send message'}
+          >
+            {isLoading ? (
+              <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            )}
+          </button>
         </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitDisabled}
-          className={`
-            flex items-center justify-center
-            px-6 py-3 
-            rounded-lg font-medium
-            transition-all duration-200
-            ${isSubmitDisabled
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-sm hover:shadow'
-            }
-          `}
-          aria-label={isLoading ? 'Generating diagram...' : 'Send message'}
-        >
-          {isLoading ? (
-            <>
-              {/* Loading Spinner */}
-              <svg 
-                className="animate-spin h-5 w-5 mr-2" 
-                fill="none" 
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle 
-                  className="opacity-25" 
-                  cx="12" 
-                  cy="12" 
-                  r="10" 
-                  stroke="currentColor" 
-                  strokeWidth="4"
-                />
-                <path 
-                  className="opacity-75" 
-                  fill="currentColor" 
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              <span>Generating...</span>
-            </>
-          ) : (
-            <>
-              {/* Send Icon */}
-              <svg 
-                className="h-5 w-5 mr-2" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" 
-                />
-              </svg>
-              <span>Generate</span>
-            </>
-          )}
-        </button>
+        {/* Helper text */}
+        <p className="mt-2 text-xs text-slate-500 text-center">
+          Press <kbd className="px-1.5 py-0.5 bg-slate-700/50 rounded text-slate-400">Enter</kbd> to send, <kbd className="px-1.5 py-0.5 bg-slate-700/50 rounded text-slate-400">Shift+Enter</kbd> for new line
+        </p>
       </div>
-
-      {/* Helper text */}
-      <p className="px-4 pb-2 text-xs text-gray-500">
-        Press Enter to send, Shift+Enter for new line
-      </p>
     </form>
   );
 };
