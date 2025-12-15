@@ -55,8 +55,14 @@
     - **Property 10: Invalid Session ID Error Handling**
     - **Validates: Requirements 5.5**
 
-- [ ] 3. Update message service for session support
-  - [ ] 3.1 Update chat_crud Lambda to support session-based message storage
+- [x] 3. Update message service for session support
+
+
+
+
+  - [x] 3.1 Update chat_crud Lambda to support session-based message storage
+
+
     - Modify `src/backend/lambda_functions/chat_crud/lambda_function.py`
     - Add sessionId parameter to message save operation
     - Update DynamoDB item structure to use PK/SK pattern
@@ -67,7 +73,9 @@
   - [ ]* 3.3 Write property test for message field completeness
     - **Property 5: Message Field Completeness**
     - **Validates: Requirements 2.2**
-  - [ ] 3.4 Update get_history Lambda to retrieve messages by session
+  - [x] 3.4 Update get_history Lambda to retrieve messages by session
+
+
     - Modify `src/backend/lambda_functions/get_history/lambda_function.py`
     - Add endpoint to get messages for a specific session
     - Ensure messages are returned in chronological order

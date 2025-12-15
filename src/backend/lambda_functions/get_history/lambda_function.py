@@ -100,9 +100,90 @@ def decode_next_token(token: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def get_messages_by_session(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[str, Any]:
+    """
+    Retrieve messages for a specific session from DynamoDB.
+    Messages are returned in chronological order (oldest first).
+    
+    Args:
+        event: Lambda event containing the request
+        dynamodb_helper: DynamoDB helper instance
+        
+    Returns:
+        API Gateway response dictionary
+    """
+    try:
+        # Get sessionId from path parameters
+        path_params = event.get('pathParameters') or {}
+        session_id = path_params.get('sessionId')
+        
+        if not session_id:
+            return create_response(400, {'error': 'Missing sessionId in path'})
+        
+        # Validate sessionId format
+        try:
+            import uuid
+            uuid.UUID(session_id)
+        except (ValueError, AttributeError):
+            return create_response(400, {'error': 'Invalid session ID format'})
+        
+        # Parse query parameters
+        query_params = event.get('queryStringParameters') or {}
+        
+        # Get limit parameter (default: 100)
+        limit = int(query_params.get('limit', 100))
+        
+        # Validate limit
+        if limit < 1 or limit > 100:
+            return create_response(400, {'error': 'Limit must be between 1 and 100'})
+        
+        # Get nextToken parameter for pagination
+        next_token = query_params.get('nextToken')
+        last_evaluated_key = None
+        
+        if next_token:
+            last_evaluated_key = decode_next_token(next_token)
+            if last_evaluated_key is None:
+                return create_response(400, {'error': 'Invalid nextToken'})
+        
+        # Query messages for the session
+        result = dynamodb_helper.query_messages_by_session(
+            session_id=session_id,
+            limit=limit,
+            last_evaluated_key=last_evaluated_key
+        )
+        
+        # Convert Decimals to int/float for JSON serialization
+        items = convert_decimals(result['items'])
+        
+        # Prepare response
+        response_body = {
+            'messages': items,
+            'count': len(items),
+            'sessionId': session_id
+        }
+        
+        # Add nextToken if there are more results
+        if result['last_evaluated_key']:
+            response_body['nextToken'] = encode_next_token(result['last_evaluated_key'])
+        else:
+            response_body['nextToken'] = None
+        
+        return create_response(200, response_body)
+        
+    except ValueError as e:
+        return create_response(400, {'error': f'Invalid parameter: {str(e)}'})
+    except Exception as e:
+        import traceback
+        print(f"Error retrieving messages: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return create_response(500, {'error': 'Failed to retrieve messages'})
+
+
 def get_history(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[str, Any]:
     """
     Retrieve chat history from DynamoDB with pagination support.
+    This is the legacy endpoint that scans all items.
     
     Args:
         event: Lambda event containing the request
@@ -169,6 +250,7 @@ def get_history(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Main Lambda handler for retrieving chat history.
+    Routes to session-based or legacy endpoints based on path.
     
     Args:
         event: Lambda event from API Gateway
@@ -188,6 +270,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     http_method = event.get('httpMethod', 'GET')
     
     if http_method == 'GET':
-        return get_history(event, dynamodb_helper)
+        # Check if this is a session-specific request
+        path_params = event.get('pathParameters') or {}
+        if 'sessionId' in path_params:
+            return get_messages_by_session(event, dynamodb_helper)
+        else:
+            return get_history(event, dynamodb_helper)
     else:
         return create_response(405, {'error': f'Method {http_method} not allowed'})

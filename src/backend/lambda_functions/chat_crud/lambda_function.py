@@ -1,6 +1,6 @@
 """
 Lambda function for chat CRUD operations.
-Handles saving chat messages to DynamoDB.
+Handles saving chat messages to DynamoDB with session support.
 """
 
 import json
@@ -12,7 +12,13 @@ from typing import Dict, Any
 sys.path.append('/opt/python')  # Lambda layer path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../shared'))
 
-from utils import generate_chat_id, get_current_timestamp, validate_diagram_type
+from utils import (
+    generate_chat_id, 
+    get_current_timestamp, 
+    validate_diagram_type,
+    generate_message_id,
+    validate_session_id
+)
 from aws_helpers import DynamoDBHelper
 
 
@@ -49,6 +55,14 @@ def validate_request(body: Dict[str, Any]) -> tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
+    # sessionId is required
+    if 'sessionId' not in body or not body['sessionId']:
+        return False, "Missing required field: sessionId"
+    
+    # Validate sessionId format
+    if not validate_session_id(body['sessionId']):
+        return False, "Invalid session ID format"
+    
     # userMessage is required
     if 'userMessage' not in body or not body['userMessage']:
         return False, "Missing required field: userMessage"
@@ -66,7 +80,7 @@ def validate_request(body: Dict[str, Any]) -> tuple[bool, str]:
 
 def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[str, Any]:
     """
-    Save a chat message to DynamoDB.
+    Save a chat message to DynamoDB using session-based PK/SK pattern.
     
     Args:
         event: Lambda event containing the request
@@ -84,19 +98,27 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         if not is_valid:
             return create_response(400, {'error': error_message})
         
-        # Generate chatId if not provided
-        chat_id = body.get('chatId', generate_chat_id())
+        # Extract sessionId from request
+        session_id = body['sessionId']
+        
+        # Generate messageId
+        message_id = body.get('messageId', generate_message_id())
         
         # Generate timestamp
         timestamp = get_current_timestamp()
         
-        # Prepare item for DynamoDB
+        # Prepare item for DynamoDB using PK/SK pattern
+        # PK: SESSION#{sessionId}
+        # SK: MSG#{timestamp}
         item = {
-            'chatId': chat_id,
+            'PK': f'SESSION#{session_id}',
+            'SK': f'MSG#{timestamp}',
+            'messageId': message_id,
+            'sessionId': session_id,
             'timestamp': timestamp,
             'userMessage': body['userMessage'],
             'diagramType': body['diagramType'],
-            'status': 'pending'
+            'status': body.get('status', 'pending')
         }
         
         # Add optional fields if present
@@ -112,8 +134,6 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
             item['diagramImageS3Key'] = body['diagramImageS3Key']
         if 'diagramMarkdownS3Key' in body:
             item['diagramMarkdownS3Key'] = body['diagramMarkdownS3Key']
-        if 'status' in body:
-            item['status'] = body['status']
         
         # Save to DynamoDB
         dynamodb_helper.put_item(item)
@@ -121,7 +141,8 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         # Return success response
         return create_response(200, {
             'success': True,
-            'chatId': chat_id,
+            'messageId': message_id,
+            'sessionId': session_id,
             'timestamp': timestamp
         })
         
@@ -129,6 +150,8 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         return create_response(400, {'error': 'Invalid JSON in request body'})
     except Exception as e:
         print(f"Error saving message: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return create_response(500, {'error': 'Failed to save chat message'})
 
 
