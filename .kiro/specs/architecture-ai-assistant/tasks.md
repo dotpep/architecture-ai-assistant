@@ -140,13 +140,22 @@
     - Verify S3 and CloudFront serving frontend properly
     - _Requirements: 6.3, 6.5, 8.2_
 
-- [ ] 5. Implement backend Lambda functions - Core logic
-  - [ ] 5.1 Create shared utilities module
+- [x] 5. Implement backend Lambda functions - Core logic
+
+
+
+
+
+  - [x] 5.1 Create shared utilities module
+
+
     - Create `src/backend/shared/utils.py` with common functions
     - Implement UUID generation, timestamp helpers
     - Create `src/backend/shared/aws_helpers.py` for DynamoDB and S3 operations
     - _Requirements: 4.1, 3.1_
-  - [ ] 5.2 Implement LLM prompt builder
+  - [x] 5.2 Implement LLM prompt builder
+
+
     - Create `src/backend/lambda_functions/generate_diagram/prompt_builder.py`
     - Build system prompts with Mermaid syntax rules for each diagram type
     - Include diagram-type-specific instructions (graph TD, erDiagram, sequenceDiagram)
@@ -155,7 +164,9 @@
     - **Property 10: System Prompt Construction**
     - Test that prompts contain diagram-type-specific Mermaid syntax instructions
     - **Validates: Requirements 5.2, 10.1**
-  - [ ] 5.4 Implement Mermaid code extractor
+  - [x] 5.4 Implement Mermaid code extractor
+
+
     - Create extraction function to parse ```mermaid code blocks from LLM response
     - Handle multiple code blocks, return first valid one
     - _Requirements: 5.3, 10.5_
