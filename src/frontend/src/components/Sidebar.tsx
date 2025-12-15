@@ -125,8 +125,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                           <p className="text-sm font-medium truncate">
                             {truncateText(session.title, 30)}
                           </p>
-                          <p className="text-xs text-slate-500 mt-0.5 capitalize">
-                            {session.diagramType} • {session.messageCount} message{session.messageCount !== 1 ? 's' : ''}
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {new Date(session.createdAt * 1000).toLocaleDateString(undefined, { 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </p>
                         </div>
                       </div>
