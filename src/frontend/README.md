@@ -1,16 +1,78 @@
-# React + Vite
+# Architecture AI Assistant - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite frontend application for the Architecture AI Assistant.
 
-Currently, two official plugins are available:
+## Setup Complete ✓
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project has been initialized with:
 
-## React Compiler
+- **React 19** with TypeScript
+- **Vite** as the build tool
+- **Tailwind CSS** for styling
+- **Axios** for API calls
+- **React Flow** for diagram rendering
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Project Structure
 
-## Expanding the ESLint configuration
+```
+src/
+├── types/
+│   └── index.ts          # TypeScript type definitions
+├── services/
+│   └── api.ts            # API service module
+├── vite-env.d.ts         # Vite environment types
+├── App.jsx               # Main application component (to be converted to TSX)
+├── main.jsx              # Entry point (to be converted to TSX)
+└── index.css             # Global styles with Tailwind
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+VITE_API_BASE_URL=https://your-api-gateway-url.execute-api.region.amazonaws.com/dev
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production (includes TypeScript compilation)
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Type Definitions
+
+All TypeScript types are defined in `src/types/index.ts`:
+
+- `DiagramType` - Supported diagram types
+- `ChatMessage` - Chat message structure
+- `GenerateDiagramRequest/Response` - API request/response types
+- `SaveChatRequest/Response` - Chat save API types
+- `ChatHistoryResponse` - Chat history API types
+
+## API Service
+
+The `src/services/api.ts` module provides three main functions:
+
+- `generateDiagram(request)` - Generate diagram from user prompt
+- `getChatHistory(params)` - Get paginated chat history
+- `saveChat(request)` - Save chat message to DynamoDB
+
+All API calls use Axios with proper error handling and TypeScript types.
+
+## Next Steps
+
+The following tasks are ready to be implemented:
+
+1. Convert existing JSX files to TSX
+2. Implement frontend components (Header, ChatInput, DiagramRenderer, etc.)
+3. Integrate API service with components
+4. Add React Flow diagram rendering
+5. Implement chat history loading
+
+## Requirements Satisfied
+
+- ✓ **Requirement 8.1**: React application with TypeScript and Vite
+- ✓ **Requirement 1.1, 2.4**: TypeScript type definitions for all data structures
+- ✓ **Requirement 7.1, 7.2, 7.3**: API service module with all three endpoints
