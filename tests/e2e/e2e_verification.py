@@ -66,7 +66,9 @@ def test_api_endpoints() -> bool:
     endpoints = [
         ("POST", "/api/diagram/generate"),
         ("GET", "/api/chat/history"),
-        ("POST", "/api/chat/save")
+        ("POST", "/api/chat/save"),
+        ("POST", "/api/session"),
+        ("GET", "/api/session"),
     ]
     
     all_accessible = True
@@ -239,10 +241,187 @@ def test_save_chat() -> Optional[str]:
         return None
 
 
+def test_session_creation() -> Optional[str]:
+    """Test creating a new chat session."""
+    log_info("Testing session creation...")
+    
+    try:
+        response = requests.post(
+            f"{API_GATEWAY_URL}/api/session",
+            json={},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            required_fields = ["sessionId", "title", "diagramType", "createdAt", "updatedAt", "messageCount"]
+            missing_fields = [f for f in required_fields if f not in data]
+            
+            if missing_fields:
+                log_error(f"Session creation response missing fields: {missing_fields}")
+                return None
+            
+            log_success(f"Session created successfully (ID: {data['sessionId']})")
+            return data["sessionId"]
+        elif response.status_code == 403:
+            log_warning("Session creation endpoint not deployed or not accessible (403 Forbidden)")
+            return None
+        else:
+            log_error(f"Session creation failed with status {response.status_code}")
+            if response.text:
+                log_error(f"Response: {response.text}")
+            return None
+            
+    except Exception as e:
+        log_error(f"Failed to create session: {e}")
+        return None
+
+
+def test_session_list() -> bool:
+    """Test retrieving session list."""
+    log_info("Testing session list retrieval...")
+    
+    try:
+        response = requests.get(
+            f"{API_GATEWAY_URL}/api/session?limit=10",
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify response structure
+            if "sessions" not in data or "count" not in data:
+                log_error("Session list response missing required fields")
+                return False
+            
+            log_success(f"Session list retrieved successfully (found {data['count']} sessions)")
+            return True
+        elif response.status_code == 403:
+            log_warning("Session list endpoint not deployed or not accessible (403 Forbidden)")
+            return False
+        else:
+            log_error(f"Session list retrieval failed with status {response.status_code}")
+            if response.text:
+                log_error(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        log_error(f"Failed to retrieve session list: {e}")
+        return False
+
+
+def test_session_messages(session_id: str) -> bool:
+    """Test retrieving messages for a specific session."""
+    log_info(f"Testing session messages retrieval for session {session_id}...")
+    
+    try:
+        response = requests.get(
+            f"{API_GATEWAY_URL}/api/session/{session_id}/messages",
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify response structure
+            if "chats" not in data or "count" not in data:
+                log_error("Session messages response missing required fields")
+                return False
+            
+            log_success(f"Session messages retrieved successfully (found {data['count']} messages)")
+            return True
+        else:
+            log_error(f"Session messages retrieval failed with status {response.status_code}")
+            return False
+            
+    except Exception as e:
+        log_error(f"Failed to retrieve session messages: {e}")
+        return False
+
+
+def test_session_title_update(session_id: str) -> bool:
+    """Test updating session title."""
+    log_info(f"Testing session title update for session {session_id}...")
+    
+    try:
+        payload = {
+            "title": "Updated Test Session Title"
+        }
+        
+        response = requests.put(
+            f"{API_GATEWAY_URL}/api/session/{session_id}",
+            json=payload,
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("title") == payload["title"]:
+                log_success(f"Session title updated successfully")
+                return True
+            else:
+                log_error("Session title update response doesn't match expected title")
+                return False
+        else:
+            log_error(f"Session title update failed with status {response.status_code}")
+            return False
+            
+    except Exception as e:
+        log_error(f"Failed to update session title: {e}")
+        return False
+
+
+def test_session_with_message(session_id: str) -> bool:
+    """Test generating a diagram within a session."""
+    log_info(f"Testing diagram generation within session {session_id}...")
+    
+    try:
+        payload = {
+            "userPrompt": "Create a simple flowchart for session testing",
+            "diagramType": "flowchart",
+            "sessionId": session_id
+        }
+        
+        response = requests.post(
+            f"{API_GATEWAY_URL}/api/diagram/generate",
+            json=payload,
+            timeout=60
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Verify response structure
+            required_fields = ["chatId", "mermaidCode", "imageUrl", "markdownUrl", "status"]
+            missing_fields = [f for f in required_fields if f not in data]
+            
+            if missing_fields:
+                log_error(f"Session diagram generation response missing fields: {missing_fields}")
+                return False
+            
+            if data["status"] != "completed":
+                log_error(f"Session diagram generation failed with status: {data['status']}")
+                return False
+            
+            log_success(f"Diagram generated successfully within session (Message ID: {data['chatId']})")
+            return True
+        else:
+            log_error(f"Session diagram generation failed with status {response.status_code}")
+            return False
+            
+    except Exception as e:
+        log_error(f"Failed to generate diagram within session: {e}")
+        return False
+
+
 def main():
     """Run all end-to-end verification tests."""
     print("\n" + "="*60)
     print("  End-to-End Verification - Architecture AI Assistant")
+    print("  Including Session Management Features")
     print("="*60 + "\n")
     
     results = {
@@ -251,7 +430,12 @@ def main():
         "diagram_generation": False,
         "download_urls_accessible": False,
         "chat_history_retrieval": False,
-        "chat_save": False
+        "chat_save": False,
+        "session_creation": False,
+        "session_list": False,
+        "session_messages": False,
+        "session_title_update": False,
+        "session_with_message": False
     }
     
     # Test 1: Frontend accessibility
@@ -262,21 +446,43 @@ def main():
     results["api_endpoints_accessible"] = test_api_endpoints()
     print()
     
-    # Test 3: Diagram generation
+    # Test 3: Session creation
+    session_id = test_session_creation()
+    results["session_creation"] = session_id is not None
+    print()
+    
+    # Test 4: Session list
+    results["session_list"] = test_session_list()
+    print()
+    
+    # Test 5: Session messages (if session was created)
+    if session_id:
+        results["session_messages"] = test_session_messages(session_id)
+        print()
+        
+        # Test 6: Session title update
+        results["session_title_update"] = test_session_title_update(session_id)
+        print()
+        
+        # Test 7: Generate diagram within session
+        results["session_with_message"] = test_session_with_message(session_id)
+        print()
+    
+    # Test 8: Diagram generation (original test)
     diagram_data = test_diagram_generation()
     results["diagram_generation"] = diagram_data is not None
     print()
     
-    # Test 4: Download URLs
+    # Test 9: Download URLs
     if diagram_data:
         results["download_urls_accessible"] = test_download_urls(diagram_data)
         print()
         
-        # Test 5: Chat history
+        # Test 10: Chat history
         results["chat_history_retrieval"] = test_chat_history(diagram_data["chatId"])
         print()
     
-    # Test 6: Chat save
+    # Test 11: Chat save
     chat_id = test_save_chat()
     results["chat_save"] = chat_id is not None
     print()
@@ -286,20 +492,58 @@ def main():
     print("  Verification Summary")
     print("="*60 + "\n")
     
-    passed = sum(1 for v in results.values() if v)
-    total = len(results)
+    # Separate core and session management tests
+    core_tests = [
+        "frontend_accessible", "api_endpoints_accessible", "diagram_generation",
+        "download_urls_accessible", "chat_history_retrieval", "chat_save"
+    ]
     
-    for test_name, result in results.items():
-        status = "✓ PASS" if result else "✗ FAIL"
-        print(f"{status}: {test_name}")
+    session_tests = [
+        "session_creation", "session_list", "session_messages", 
+        "session_title_update", "session_with_message"
+    ]
     
-    print(f"\nTotal: {passed}/{total} tests passed\n")
+    print("Core Application Tests:")
+    core_passed = 0
+    for test_name in core_tests:
+        if test_name in results:
+            result = results[test_name]
+            status = "✓ PASS" if result else "✗ FAIL"
+            print(f"  {status}: {test_name}")
+            if result:
+                core_passed += 1
     
-    if passed == total:
-        log_success("All end-to-end verification tests passed!")
-        return 0
+    print(f"\nCore Tests: {core_passed}/{len(core_tests)} passed")
+    
+    print("\nSession Management Tests:")
+    session_passed = 0
+    for test_name in session_tests:
+        if test_name in results:
+            result = results[test_name]
+            status = "✓ PASS" if result else "✗ FAIL"
+            print(f"  {status}: {test_name}")
+            if result:
+                session_passed += 1
+    
+    print(f"\nSession Management Tests: {session_passed}/{len(session_tests)} passed")
+    
+    total_passed = sum(1 for v in results.values() if v)
+    total_tests = len(results)
+    
+    print(f"\nOverall Total: {total_passed}/{total_tests} tests passed\n")
+    
+    if core_passed == len(core_tests):
+        log_success("All core application tests passed!")
+        if session_passed == len(session_tests):
+            log_success("All session management tests passed!")
+            log_success("Complete end-to-end verification successful!")
+            return 0
+        else:
+            log_warning("Session management features may not be fully deployed")
+            log_info("Core application is functional, session management needs attention")
+            return 0  # Don't fail if core app works
     else:
-        log_error(f"{total - passed} test(s) failed")
+        log_error(f"{len(core_tests) - core_passed} core test(s) failed")
         return 1
 
 

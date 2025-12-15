@@ -41,6 +41,7 @@ export interface ChatMessage {
 export interface GenerateDiagramRequest {
   userPrompt: string;
   diagramType: DiagramType;
+  sessionId?: string;
 }
 
 /**
@@ -62,6 +63,7 @@ export interface SaveChatRequest {
   chatId: string;
   userMessage: string;
   diagramType: DiagramType;
+  sessionId?: string;
 }
 
 /**
@@ -86,6 +88,59 @@ export interface ChatHistoryResponse {
  * Query parameters for chat history
  */
 export interface ChatHistoryParams {
+  limit?: number;
+  nextToken?: string;
+}
+
+/**
+ * Chat session structure
+ * Requirements: 1.1, 3.1
+ */
+export interface Session {
+  sessionId: string;
+  title: string;
+  diagramType: DiagramType;
+  createdAt: number;
+  updatedAt: number;
+  messageCount: number;
+}
+
+/**
+ * Response from session list API
+ * Requirements: 3.1
+ */
+export interface SessionListResponse {
+  sessions: Session[];
+  count: number;
+  nextToken?: string;
+}
+
+/**
+ * Response from session creation API
+ * Requirements: 1.1
+ */
+export interface CreateSessionResponse {
+  sessionId: string;
+  title: string;
+  diagramType: DiagramType;
+  createdAt: number;
+  updatedAt: number;
+  messageCount: number;
+}
+
+/**
+ * Request payload for updating session title
+ * Requirements: 1.1
+ */
+export interface UpdateSessionTitleRequest {
+  title: string;
+}
+
+/**
+ * Query parameters for session list
+ * Requirements: 3.1
+ */
+export interface SessionListParams {
   limit?: number;
   nextToken?: string;
 }

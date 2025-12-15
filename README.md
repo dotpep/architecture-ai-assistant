@@ -9,14 +9,27 @@ The Architecture AI Assistant enables users to:
 - Support multiple diagram types: Flowchart, ERD, Sequence, Class, State, Architecture, DFD
 - View diagrams rendered interactively with zoom and pan
 - Download diagrams as PNG images or Mermaid markdown
-- Persist chat history across sessions
+- Manage multiple chat sessions with automatic title generation
+- Navigate between different conversation sessions
+- Persist chat history with session-based organization
 
 ## Architecture
 
 - **Frontend**: React + TypeScript SPA hosted on S3 with CloudFront CDN
 - **Backend**: Python Lambda functions behind API Gateway
-- **Storage**: DynamoDB for chat history, S3 for diagram files
+- **Storage**: DynamoDB for session-based chat history, S3 for diagram files
 - **Infrastructure**: Terraform for Infrastructure-as-Code
+
+![High Level Architecture](/docs/architecutre-diagram.png)
+
+### Session Management
+
+The application uses a session-based architecture where:
+- Each chat session contains multiple message exchanges
+- Sessions are automatically titled from the first user message
+- The sidebar displays sessions grouped by date (Today, Yesterday, Last 7 Days, Older)
+- DynamoDB uses a single-table design with PK/SK pattern for efficient querying
+- Session metadata and messages are stored together for optimal performance
 
 ## Prerequisites
 
@@ -248,11 +261,13 @@ cd tests/integration
 │   │   ├── lambda_functions/
 │   │   │   ├── generate_diagram/
 │   │   │   ├── chat_crud/
-│   │   │   └── get_history/
-│   │   └── shared/         # Shared utilities
+│   │   │   ├── get_history/
+│   │   │   └── session_crud/    # Session management
+│   │   └── shared/              # Shared utilities
 │   └── frontend/
 │       └── src/
 │           ├── components/
+│           ├── hooks/           # Session state management
 │           ├── services/
 │           ├── types/
 │           └── utils/
@@ -265,12 +280,115 @@ cd tests/integration
 
 ## API Endpoints
 
-### POST /api/diagram/generate
+### Session Management
+
+#### POST /api/session
+Create a new chat session
+
+**Response:**
+```json
+{
+  "sessionId": "uuid",
+  "title": "",
+  "diagramType": "flowchart",
+  "createdAt": 1702564800,
+  "updatedAt": 1702564800,
+  "messageCount": 0
+}
+```
+
+#### GET /api/session
+List all chat sessions
+
+**Query Parameters:**
+- `limit` (optional): Number of results (default: 50)
+- `nextToken` (optional): Pagination token
+
+**Response:**
+```json
+{
+  "sessions": [
+    {
+      "sessionId": "uuid",
+      "title": "Microservices architecture for e-commerce",
+      "diagramType": "flowchart",
+      "createdAt": 1702564800,
+      "updatedAt": 1702564900,
+      "messageCount": 3
+    }
+  ],
+  "count": 1,
+  "nextToken": "optional-token"
+}
+```
+
+#### GET /api/session/{sessionId}
+Get a specific session
+
+**Response:**
+```json
+{
+  "sessionId": "uuid",
+  "title": "Microservices architecture",
+  "diagramType": "flowchart",
+  "createdAt": 1702564800,
+  "updatedAt": 1702564900,
+  "messageCount": 3
+}
+```
+
+#### PUT /api/session/{sessionId}
+Update session title
+
+**Request:**
+```json
+{
+  "title": "Updated session title"
+}
+```
+
+#### DELETE /api/session/{sessionId}
+Delete a session and all its messages
+
+**Response:**
+```json
+{
+  "message": "Session deleted successfully"
+}
+```
+
+#### GET /api/session/{sessionId}/messages
+Get all messages for a session
+
+**Response:**
+```json
+{
+  "messages": [
+    {
+      "messageId": "msg-uuid",
+      "sessionId": "uuid",
+      "timestamp": 1702564800,
+      "userMessage": "Create a microservices diagram",
+      "diagramType": "flowchart",
+      "aiResponse": "Here's your diagram...",
+      "mermaidCode": "graph TD\n  A[Service] --> B[Database]",
+      "imageUrl": "https://cloudfront-url/diagrams/uuid.png",
+      "markdownUrl": "https://cloudfront-url/diagrams/uuid.md",
+      "status": "completed"
+    }
+  ]
+}
+```
+
+### Diagram Generation
+
+#### POST /api/diagram/generate
 Generate a new architecture diagram
 
 **Request:**
 ```json
 {
+  "sessionId": "uuid",
   "userPrompt": "Create a microservices architecture diagram",
   "diagramType": "flowchart"
 }
@@ -279,7 +397,8 @@ Generate a new architecture diagram
 **Response:**
 ```json
 {
-  "chatId": "uuid",
+  "messageId": "msg-uuid",
+  "sessionId": "uuid",
   "timestamp": 1702564800,
   "mermaidCode": "graph TD\n  A[Service] --> B[Database]",
   "imageUrl": "https://cloudfront-url/diagrams/uuid.png",
@@ -288,15 +407,21 @@ Generate a new architecture diagram
 }
 ```
 
-### GET /api/chat/history
-Retrieve chat history with pagination
+### Legacy Endpoints (Deprecated)
+
+These endpoints are maintained for backward compatibility but should not be used in new implementations.
+
+#### GET /api/chat/history
+Retrieve chat history with pagination (deprecated - use GET /api/session and GET /api/session/{sessionId}/messages instead)
 
 **Query Parameters:**
 - `limit` (optional): Number of results (default: 50)
 - `nextToken` (optional): Pagination token
 
-### POST /api/chat/save
-Save a chat message
+**Note:** This endpoint scans all items and does not support session-based filtering.
+
+#### POST /api/chat/save
+Save a chat message (deprecated - use POST /api/diagram/generate with sessionId instead)
 
 **Request:**
 ```json
@@ -306,6 +431,8 @@ Save a chat message
   "diagramType": "flowchart"
 }
 ```
+
+**Note:** This endpoint does not associate messages with sessions. Use the session-based workflow instead.
 
 ## Troubleshooting
 
@@ -348,6 +475,7 @@ Lambda function logs are available in CloudWatch:
 - `/aws/lambda/architecture-ai-assistant-generate-diagram-dev`
 - `/aws/lambda/architecture-ai-assistant-chat-crud-dev`
 - `/aws/lambda/architecture-ai-assistant-get-history-dev`
+- `/aws/lambda/architecture-ai-assistant-session-crud-dev`
 
 ### Metrics
 

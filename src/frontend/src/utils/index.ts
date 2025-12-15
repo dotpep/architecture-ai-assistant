@@ -9,3 +9,9 @@ export {
   detectDiagramType,
   type ParsedDiagram,
 } from './mermaidParser';
+
+export {
+  groupSessionsByDate,
+  type SessionGroup,
+  type GroupedSessions,
+} from './sessionUtils';

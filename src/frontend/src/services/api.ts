@@ -12,6 +12,11 @@ import {
   SaveChatResponse,
   ChatHistoryResponse,
   ChatHistoryParams,
+  Session,
+  SessionListResponse,
+  CreateSessionResponse,
+  UpdateSessionTitleRequest,
+  SessionListParams,
   ApiError,
 } from '../types';
 
@@ -138,4 +143,102 @@ export const updateApiBaseUrl = (newBaseUrl: string): void => {
  */
 export const getApiBaseUrl = (): string | undefined => {
   return apiClient.defaults.baseURL;
+};
+
+/**
+ * Create a new chat session
+ * POST /api/session
+ * Requirements: 5.1
+ * 
+ * @returns New session data
+ */
+export const createSession = async (): Promise<CreateSessionResponse> => {
+  try {
+    const response = await apiClient.post<CreateSessionResponse>('/api/session');
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+/**
+ * Get list of all sessions with pagination
+ * GET /api/session
+ * Requirements: 5.2
+ * 
+ * @param params - Optional limit and pagination token
+ * @returns Array of sessions with metadata
+ */
+export const getSessions = async (
+  params?: SessionListParams
+): Promise<SessionListResponse> => {
+  try {
+    const response = await apiClient.get<SessionListResponse>(
+      '/api/session',
+      { params }
+    );
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+/**
+ * Get messages for a specific session
+ * GET /api/session/{sessionId}/messages
+ * Requirements: 5.3
+ * 
+ * @param sessionId - The session ID to get messages for
+ * @returns Array of messages for the session
+ */
+export const getSessionMessages = async (
+  sessionId: string
+): Promise<ChatHistoryResponse> => {
+  try {
+    const response = await apiClient.get<ChatHistoryResponse>(
+      `/api/session/${sessionId}/messages`
+    );
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+/**
+ * Update session title
+ * PUT /api/session/{sessionId}
+ * Requirements: 5.1
+ * 
+ * @param sessionId - The session ID to update
+ * @param request - New title data
+ * @returns Updated session data
+ */
+export const updateSessionTitle = async (
+  sessionId: string,
+  request: UpdateSessionTitleRequest
+): Promise<Session> => {
+  try {
+    const response = await apiClient.put<Session>(
+      `/api/session/${sessionId}`,
+      request
+    );
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+/**
+ * Delete a session
+ * DELETE /api/session/{sessionId}
+ * Requirements: 5.1
+ * 
+ * @param sessionId - The session ID to delete
+ */
+export const deleteSession = async (sessionId: string): Promise<void> => {
+  try {
+    await apiClient.delete(`/api/session/${sessionId}`);
+  } catch (error) {
+    return handleApiError(error);
+  }
 };

@@ -259,22 +259,46 @@ def handler(event, context):
         # Save to DynamoDB
         print(f"Saving to DynamoDB...")
         try:
-            dynamodb_item = {
-                'chatId': chat_id,
-                'timestamp': timestamp,
-                'userMessage': user_prompt,
-                'diagramType': diagram_type,
-                'aiResponse': llm_response,
-                'mermaidCode': mermaid_code,
-                'diagramImageS3Key': f"diagrams/{chat_id}.png",
-                'diagramMarkdownS3Key': f"diagrams/{chat_id}.md",
-                'imageUrl': image_url,
-                'markdownUrl': markdown_url,
-                'status': 'completed'
-            }
+            # Check if sessionId is provided - if so, save with session-based PK/SK pattern
+            session_id = body.get('sessionId')
+            
+            if session_id:
+                # Save with session-based pattern for session messages
+                dynamodb_item = {
+                    'PK': f'SESSION#{session_id}',
+                    'SK': f'MSG#{timestamp}',
+                    'chatId': chat_id,
+                    'messageId': chat_id,
+                    'sessionId': session_id,
+                    'timestamp': timestamp,
+                    'userMessage': user_prompt,
+                    'diagramType': diagram_type,
+                    'aiResponse': llm_response,
+                    'mermaidCode': mermaid_code,
+                    'diagramImageS3Key': f"diagrams/{chat_id}.png",
+                    'diagramMarkdownS3Key': f"diagrams/{chat_id}.md",
+                    'imageUrl': image_url,
+                    'markdownUrl': markdown_url,
+                    'status': 'completed'
+                }
+            else:
+                # Legacy pattern without session
+                dynamodb_item = {
+                    'chatId': chat_id,
+                    'timestamp': timestamp,
+                    'userMessage': user_prompt,
+                    'diagramType': diagram_type,
+                    'aiResponse': llm_response,
+                    'mermaidCode': mermaid_code,
+                    'diagramImageS3Key': f"diagrams/{chat_id}.png",
+                    'diagramMarkdownS3Key': f"diagrams/{chat_id}.md",
+                    'imageUrl': image_url,
+                    'markdownUrl': markdown_url,
+                    'status': 'completed'
+                }
             
             dynamodb_helper.put_item(dynamodb_item)
-            print(f"Saved to DynamoDB: {chat_id}")
+            print(f"Saved to DynamoDB: {chat_id} (session: {session_id})")
         except Exception as e:
             print(f"Failed to save to DynamoDB: {str(e)}")
             # Continue even if DynamoDB save fails - we have the diagram in S3

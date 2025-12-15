@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Script to clean up DynamoDB chat history and S3 diagrams
+Updated for session-based data model with PK/SK pattern
 """
 
 import boto3
@@ -13,22 +14,22 @@ s3 = boto3.client('s3', region_name='us-east-1')
 print("Cleaning up DynamoDB chat history...")
 table = dynamodb.Table('architecture-ai-assistant-chat_history-dev')
 
-# Scan all items
+# Scan all items (both sessions and messages)
 response = table.scan()
 items = response.get('Items', [])
 
-# Delete each item
+# Delete each item using PK/SK pattern
 deleted_count = 0
 for item in items:
     table.delete_item(
         Key={
-            'chatId': item['chatId'],
-            'timestamp': item['timestamp']
+            'PK': item['PK'],
+            'SK': item['SK']
         }
     )
     deleted_count += 1
 
-print(f"✓ Deleted {deleted_count} chat history items from DynamoDB")
+print(f"✓ Deleted {deleted_count} items (sessions and messages) from DynamoDB")
 
 # S3 cleanup - delete all diagrams
 print("\nCleaning up S3 diagrams...")

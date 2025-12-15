@@ -187,13 +187,13 @@ RETRY_ATTEMPTS=3
 
 ### Issue: DynamoDB Item Not Found
 
-**Cause**: Incorrect chatId or timestamp
+**Cause**: Incorrect PK or SK values
 
-**Solution**: Use exact values from PUT operation
+**Solution**: Use exact PK/SK values from PUT operation (session-based data model)
 
 ```json
 {
-  "body": "{\"operation\": \"GET\", \"chatId\": \"integration-test-1\", \"timestamp\": 1734217200}"
+  "body": "{\"operation\": \"GET\", \"PK\": \"SESSION#integration-test-session-1\", \"SK\": \"MSG#1734217200\"}"
 }
 ```
 

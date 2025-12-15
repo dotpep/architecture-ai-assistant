@@ -110,6 +110,48 @@ class DynamoDBHelper:
         except ClientError as e:
             raise Exception(f"Failed to query DynamoDB: {e.response['Error']['Message']}")
     
+    def query_messages_by_session(self, session_id: str, limit: int = 100,
+                                   last_evaluated_key: Optional[Dict] = None) -> Dict[str, Any]:
+        """
+        Query messages for a specific session using PK/SK pattern.
+        
+        Args:
+            session_id: The session ID to query messages for
+            limit: Maximum number of items to return
+            last_evaluated_key: Token for pagination
+            
+        Returns:
+            Dict containing items and pagination token
+            
+        Raises:
+            ClientError: If the query operation fails
+        """
+        try:
+            pk = f'SESSION#{session_id}'
+            
+            query_params = {
+                'KeyConditionExpression': 'PK = :pk AND begins_with(SK, :sk_prefix)',
+                'ExpressionAttributeValues': {
+                    ':pk': pk,
+                    ':sk_prefix': 'MSG#'
+                },
+                'Limit': limit,
+                'ScanIndexForward': True  # Sort by timestamp ascending (chronological order)
+            }
+            
+            if last_evaluated_key:
+                query_params['ExclusiveStartKey'] = last_evaluated_key
+            
+            response = self.table.query(**query_params)
+            
+            return {
+                'items': response.get('Items', []),
+                'count': response.get('Count', 0),
+                'last_evaluated_key': response.get('LastEvaluatedKey')
+            }
+        except ClientError as e:
+            raise Exception(f"Failed to query messages by session: {e.response['Error']['Message']}")
+    
     def scan_all(self, limit: int = 50, 
                  last_evaluated_key: Optional[Dict] = None) -> Dict[str, Any]:
         """
