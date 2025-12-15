@@ -103,6 +103,7 @@
 
 
 
+
   - [x] 5.1 Add session_crud Lambda resource to Terraform
 
 
@@ -118,12 +119,21 @@
     - Add route: GET /api/session/{sessionId}/messages
     - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 6. Update frontend types and API service
-  - [ ] 6.1 Add session types to frontend type definitions
+
+- [x] 6. Update frontend types and API service
+
+
+
+
+  - [x] 6.1 Add session types to frontend type definitions
+
+
     - Update `src/frontend/src/types/index.ts`
     - Add Session interface, SessionListResponse, CreateSessionResponse types
     - _Requirements: 1.1, 3.1_
-  - [ ] 6.2 Add session API functions to API service
+  - [x] 6.2 Add session API functions to API service
+
+
     - Update `src/frontend/src/services/api.ts`
     - Add createSession(), getSessions(), getSessionMessages(), updateSessionTitle() functions
     - _Requirements: 5.1, 5.2, 5.3_
