@@ -181,3 +181,46 @@ resource "aws_cloudwatch_log_group" "get_history" {
     Name = "${var.project_name}-get-history-logs"
   }
 }
+
+# ============================================
+# Session CRUD Lambda Function
+# Requirements: 5.1
+# Timeout: 10s, Memory: 256MB
+# ============================================
+
+resource "aws_lambda_function" "session_crud" {
+  function_name = "${var.project_name}-session-crud-${var.environment}"
+  description   = "Handles session CRUD operations (create, list, get, update, delete)"
+  role          = aws_iam_role.lambda_session_crud.arn
+  handler       = "lambda_function.handler"
+  runtime       = "python3.11"
+  timeout       = 10  # 10 seconds for DynamoDB operations
+  memory_size   = 256 # 256MB for basic operations
+
+  filename         = data.archive_file.lambda_placeholder.output_path
+  source_code_hash = data.archive_file.lambda_placeholder.output_base64sha256
+
+  layers = [aws_lambda_layer_version.shared_dependencies.arn]
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = aws_dynamodb_table.chat_history.name
+      ENVIRONMENT         = var.environment
+    }
+  }
+
+  tags = {
+    Name     = "${var.project_name}-session-crud"
+    Function = "session-operations"
+  }
+}
+
+# CloudWatch Log Group for session_crud Lambda
+resource "aws_cloudwatch_log_group" "session_crud" {
+  name              = "/aws/lambda/${aws_lambda_function.session_crud.function_name}"
+  retention_in_days = 14
+
+  tags = {
+    Name = "${var.project_name}-session-crud-logs"
+  }
+}

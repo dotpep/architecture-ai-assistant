@@ -95,12 +95,24 @@
 
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Update Terraform for new Lambda and API Gateway routes
-  - [ ] 5.1 Add session_crud Lambda resource to Terraform
+- [x] 5. Update Terraform for new Lambda and API Gateway routes
+
+
+
+
+
+
+
+  - [x] 5.1 Add session_crud Lambda resource to Terraform
+
+
     - Update `infrastructure/terraform/lambda.tf` with new Lambda function
     - Configure IAM permissions for DynamoDB access
     - _Requirements: 5.1_
-  - [ ] 5.2 Add API Gateway routes for session endpoints
+  - [x] 5.2 Add API Gateway routes for session endpoints
+
+
+
     - Update `infrastructure/terraform/api_gateway.tf`
     - Add routes: POST/GET /api/session, GET/PUT/DELETE /api/session/{sessionId}
     - Add route: GET /api/session/{sessionId}/messages

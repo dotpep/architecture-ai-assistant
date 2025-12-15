@@ -31,6 +31,12 @@ resource "aws_iam_role" "lambda_get_history" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
+# IAM Role for session_crud Lambda
+resource "aws_iam_role" "lambda_session_crud" {
+  name               = "${var.project_name}-lambda-session-crud-${var.environment}"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+}
+
 # CloudWatch Logs policy for all Lambda functions
 data "aws_iam_policy_document" "lambda_cloudwatch_logs" {
   statement {
@@ -129,6 +135,31 @@ resource "aws_iam_policy" "get_history_dynamodb" {
   policy      = data.aws_iam_policy_document.get_history_dynamodb.json
 }
 
+# DynamoDB policy for session_crud Lambda (Full CRUD + Query)
+data "aws_iam_policy_document" "session_crud_dynamodb" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:PutItem",
+      "dynamodb:GetItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:Query",
+      "dynamodb:Scan"
+    ]
+    resources = [
+      aws_dynamodb_table.chat_history.arn,
+      "${aws_dynamodb_table.chat_history.arn}/index/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "session_crud_dynamodb" {
+  name        = "${var.project_name}-session-crud-dynamodb-${var.environment}"
+  description = "Allow session_crud Lambda to perform CRUD and query operations on DynamoDB"
+  policy      = data.aws_iam_policy_document.session_crud_dynamodb.json
+}
+
 # Attach policies to generate_diagram Lambda role
 resource "aws_iam_role_policy_attachment" "generate_diagram_cloudwatch" {
   role       = aws_iam_role.lambda_generate_diagram.name
@@ -165,4 +196,15 @@ resource "aws_iam_role_policy_attachment" "get_history_cloudwatch" {
 resource "aws_iam_role_policy_attachment" "get_history_dynamodb" {
   role       = aws_iam_role.lambda_get_history.name
   policy_arn = aws_iam_policy.get_history_dynamodb.arn
+}
+
+# Attach policies to session_crud Lambda role
+resource "aws_iam_role_policy_attachment" "session_crud_cloudwatch" {
+  role       = aws_iam_role.lambda_session_crud.name
+  policy_arn = aws_iam_policy.lambda_cloudwatch_logs.arn
+}
+
+resource "aws_iam_role_policy_attachment" "session_crud_dynamodb" {
+  role       = aws_iam_role.lambda_session_crud.name
+  policy_arn = aws_iam_policy.session_crud_dynamodb.arn
 }
