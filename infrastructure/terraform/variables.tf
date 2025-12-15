@@ -44,3 +44,9 @@ variable "llm_api_key" {
   sensitive   = true
   default     = ""
 }
+
+variable "llm_model" {
+  description = "LLM model name to use for generation"
+  type        = string
+  default     = "llama-3.3-70b-versatile"
+}

@@ -86,6 +86,7 @@ resource "aws_lambda_function" "generate_diagram" {
       CLOUDFRONT_URL      = "https://${aws_cloudfront_distribution.frontend.domain_name}"
       LLM_API_ENDPOINT    = var.llm_api_endpoint
       LLM_API_KEY         = var.llm_api_key
+      LLM_MODEL           = var.llm_model
       ENVIRONMENT         = var.environment
     }
   }
