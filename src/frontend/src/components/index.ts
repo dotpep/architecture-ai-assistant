@@ -9,3 +9,5 @@ export { default as ChatInput } from './ChatInput';
 export { default as ChatMessage, UserMessage, AIMessage } from './ChatMessage';
 export { default as MermaidCodePreview } from './MermaidCodePreview';
 export { default as DiagramRenderer } from './DiagramRenderer';
+export { default as DownloadButtons } from './DownloadButtons';
+export { default as ChatContainer } from './ChatContainer';

@@ -374,8 +374,15 @@
     - Test that no two nodes share same coordinates
     - **Validates: Requirements 9.4**
 
-- [ ] 13. Implement frontend components - Download and history
-  - [ ] 13.1 Create DownloadButtons component
+- [x] 13. Implement frontend components - Download and history
+
+
+
+
+
+  - [x] 13.1 Create DownloadButtons component
+
+
     - Create `src/frontend/src/components/DownloadButtons.tsx`
     - Implement PNG and markdown download buttons
     - Trigger file downloads from S3 URLs
@@ -384,12 +391,16 @@
     - **Property 6: Download Button Presence**
     - Test that completed diagrams show both download buttons
     - **Validates: Requirements 3.3, 3.4**
-  - [ ] 13.3 Create ChatContainer component
+  - [x] 13.3 Create ChatContainer component
+
+
     - Create `src/frontend/src/components/ChatContainer.tsx`
     - Compose ChatMessages, ChatInput components
     - Manage chat state and API interactions
     - _Requirements: 1.1, 1.2, 1.3_
-  - [ ] 13.4 Implement chat history loading
+  - [x] 13.4 Implement chat history loading
+
+
     - Load previous chat history on app mount
     - Re-render diagrams from stored Mermaid code
     - _Requirements: 4.2, 4.3_
