@@ -83,9 +83,17 @@ class MermaidValidator:
             return False, "Mermaid code does not start with a valid diagram type declaration"
         
         # If diagram type is specified, verify it matches
+        # Note: architecture and dfd are aliases for flowchart
         if diagram_type:
             diagram_type_lower = diagram_type.lower()
-            if detected_type != diagram_type_lower:
+            
+            # Handle aliases: architecture and dfd both use flowchart syntax
+            flowchart_aliases = ['flowchart', 'architecture', 'dfd']
+            
+            if diagram_type_lower in flowchart_aliases and detected_type in flowchart_aliases:
+                # All flowchart aliases are compatible with each other
+                pass
+            elif detected_type != diagram_type_lower:
                 return False, f"Diagram type mismatch: expected {diagram_type}, detected {detected_type}"
         
         # Check for multi-line content (diagrams should have multiple lines)
