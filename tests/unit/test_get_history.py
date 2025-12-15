@@ -29,8 +29,9 @@ spec = importlib.util.spec_from_file_location("get_history_lambda", os.path.join
 lambda_function = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(lambda_function)
 
-lambda_handler = lambda_function.lambda_handler
+handler = lambda_function.handler
 get_history = lambda_function.get_history
+get_messages_by_session = lambda_function.get_messages_by_session
 encode_next_token = lambda_function.encode_next_token
 decode_next_token = lambda_function.decode_next_token
 
@@ -247,8 +248,8 @@ class TestGetHistory:
         result = decode_next_token('not-a-valid-base64-token!!!')
         assert result is None
     
-    def test_lambda_handler_get_method(self):
-        """Test lambda_handler routes GET requests correctly."""
+    def test_handler_get_method(self):
+        """Test handler routes GET requests correctly."""
         with patch.object(lambda_function, 'DynamoDBHelper') as mock_helper_class:
             mock_helper = Mock()
             mock_helper_class.return_value = mock_helper
@@ -263,32 +264,32 @@ class TestGetHistory:
                 'queryStringParameters': None
             }
             
-            response = lambda_handler(event, None)
+            response = handler(event, None)
             
             assert response['statusCode'] == 200
             body = json.loads(response['body'])
             assert 'chats' in body
             assert 'count' in body
     
-    def test_lambda_handler_options_method(self):
-        """Test lambda_handler handles OPTIONS for CORS."""
+    def test_handler_options_method(self):
+        """Test handler handles OPTIONS for CORS."""
         event = {
             'httpMethod': 'OPTIONS'
         }
         
-        response = lambda_handler(event, None)
+        response = handler(event, None)
         
         assert response['statusCode'] == 200
         assert 'Access-Control-Allow-Origin' in response['headers']
     
-    def test_lambda_handler_unsupported_method(self):
-        """Test lambda_handler rejects unsupported HTTP methods."""
+    def test_handler_unsupported_method(self):
+        """Test handler rejects unsupported HTTP methods."""
         with patch('lambda_function.DynamoDBHelper'):
             event = {
                 'httpMethod': 'POST'
             }
             
-            response = lambda_handler(event, None)
+            response = handler(event, None)
             
             assert response['statusCode'] == 405
             body = json.loads(response['body'])

@@ -87,7 +87,12 @@
     - **Property 7: Serialization Round-Trip**
     - **Validates: Requirements 2.4, 2.5**
 
-- [ ] 4. Checkpoint - Ensure all backend tests pass
+- [x] 4. Checkpoint - Ensure all backend tests pass
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Update Terraform for new Lambda and API Gateway routes

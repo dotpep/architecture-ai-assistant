@@ -5,6 +5,7 @@ Unit tests for chat_crud Lambda function.
 import json
 import sys
 import os
+import uuid
 from unittest.mock import Mock, patch, MagicMock
 
 # Mock boto3 before importing modules that use it
@@ -35,6 +36,7 @@ class TestChatCrudLambda:
     def test_validate_request_success(self):
         """Test request validation with valid data."""
         body = {
+            'sessionId': str(uuid.uuid4()),
             'userMessage': 'Create a flowchart',
             'diagramType': 'flowchart'
         }
@@ -46,6 +48,7 @@ class TestChatCrudLambda:
     def test_validate_request_missing_user_message(self):
         """Test request validation with missing userMessage."""
         body = {
+            'sessionId': str(uuid.uuid4()),
             'diagramType': 'flowchart'
         }
         
@@ -56,6 +59,7 @@ class TestChatCrudLambda:
     def test_validate_request_missing_diagram_type(self):
         """Test request validation with missing diagramType."""
         body = {
+            'sessionId': str(uuid.uuid4()),
             'userMessage': 'Create a flowchart'
         }
         
@@ -66,6 +70,7 @@ class TestChatCrudLambda:
     def test_validate_request_invalid_diagram_type(self):
         """Test request validation with invalid diagram type."""
         body = {
+            'sessionId': str(uuid.uuid4()),
             'userMessage': 'Create a diagram',
             'diagramType': 'invalid_type'
         }
@@ -74,15 +79,19 @@ class TestChatCrudLambda:
         assert is_valid is False
         assert 'Invalid diagram type' in error
     
-    def test_save_message_generates_chat_id(self):
-        """Test that save_message generates chatId when not provided."""
+    def test_save_message_generates_message_id(self):
+        """Test that save_message generates messageId when not provided."""
         # Setup mock DynamoDB helper
         mock_db_instance = MagicMock()
+        
+        # Use a valid UUID for sessionId
+        test_session_id = str(uuid.uuid4())
         
         # Create event
         event = {
             'httpMethod': 'POST',
             'body': json.dumps({
+                'sessionId': test_session_id,
                 'userMessage': 'Create a flowchart',
                 'diagramType': 'flowchart'
             })
@@ -95,26 +104,35 @@ class TestChatCrudLambda:
         assert response['statusCode'] == 200
         body = json.loads(response['body'])
         assert body['success'] is True
-        assert 'chatId' in body
+        assert 'messageId' in body
+        assert 'sessionId' in body
+        assert body['sessionId'] == test_session_id
         assert 'timestamp' in body
         
         # Verify DynamoDB was called
         mock_db_instance.put_item.assert_called_once()
         call_args = mock_db_instance.put_item.call_args[0][0]
+        assert call_args['PK'] == f'SESSION#{test_session_id}'
+        assert call_args['SK'].startswith('MSG#')
         assert call_args['userMessage'] == 'Create a flowchart'
         assert call_args['diagramType'] == 'flowchart'
         assert call_args['status'] == 'pending'
     
-    def test_save_message_uses_provided_chat_id(self):
-        """Test that save_message uses provided chatId."""
+    def test_save_message_uses_provided_message_id(self):
+        """Test that save_message uses provided messageId."""
         # Setup mock DynamoDB helper
         mock_db_instance = MagicMock()
         
-        # Create event with chatId
+        # Use valid UUIDs
+        test_session_id = str(uuid.uuid4())
+        test_message_id = str(uuid.uuid4())
+        
+        # Create event with messageId
         event = {
             'httpMethod': 'POST',
             'body': json.dumps({
-                'chatId': 'existing-chat-id',
+                'sessionId': test_session_id,
+                'messageId': test_message_id,
                 'userMessage': 'Create a sequence diagram',
                 'diagramType': 'sequence'
             })
@@ -126,21 +144,28 @@ class TestChatCrudLambda:
         # Verify response
         assert response['statusCode'] == 200
         body = json.loads(response['body'])
-        assert body['chatId'] == 'existing-chat-id'
+        assert body['messageId'] == test_message_id
+        assert body['sessionId'] == test_session_id
         
-        # Verify DynamoDB was called with correct chatId
+        # Verify DynamoDB was called with correct messageId and sessionId
         call_args = mock_db_instance.put_item.call_args[0][0]
-        assert call_args['chatId'] == 'existing-chat-id'
+        assert call_args['messageId'] == test_message_id
+        assert call_args['sessionId'] == test_session_id
+        assert call_args['PK'] == f'SESSION#{test_session_id}'
     
     def test_save_message_includes_optional_fields(self):
         """Test that save_message includes optional fields when provided."""
         # Setup mock DynamoDB helper
         mock_db_instance = MagicMock()
         
+        # Use a valid UUID for sessionId
+        test_session_id = str(uuid.uuid4())
+        
         # Create event with optional fields
         event = {
             'httpMethod': 'POST',
             'body': json.dumps({
+                'sessionId': test_session_id,
                 'userMessage': 'Create an ERD',
                 'diagramType': 'erdiagram',
                 'aiResponse': 'Here is your diagram',
@@ -159,6 +184,8 @@ class TestChatCrudLambda:
         
         # Verify all fields were saved
         call_args = mock_db_instance.put_item.call_args[0][0]
+        assert call_args['sessionId'] == test_session_id
+        assert call_args['PK'] == f'SESSION#{test_session_id}'
         assert call_args['aiResponse'] == 'Here is your diagram'
         assert call_args['mermaidCode'] == 'erDiagram\n  USER ||--o{ ORDER : places'
         assert call_args['imageUrl'] == 'https://example.com/image.png'
@@ -183,38 +210,43 @@ class TestChatCrudLambda:
         assert 'Invalid JSON' in body['error']
     
     @patch('lambda_function.DynamoDBHelper')
-    def test_lambda_handler_options_request(self, mock_db):
-        """Test lambda_handler handles OPTIONS request for CORS."""
+    def test_handler_options_request(self, mock_db):
+        """Test handler handles OPTIONS request for CORS."""
         event = {
             'httpMethod': 'OPTIONS'
         }
         
-        response = lambda_function.lambda_handler(event, None)
+        response = lambda_function.handler(event, None)
         
         assert response['statusCode'] == 200
         assert 'Access-Control-Allow-Origin' in response['headers']
     
-    def test_lambda_handler_post_request(self):
-        """Test lambda_handler handles POST request."""
+    def test_handler_post_request(self):
+        """Test handler handles POST request."""
         # Setup mocks
         mock_db_instance = MagicMock()
+        
+        # Use a valid UUID for sessionId
+        test_session_id = str(uuid.uuid4())
         
         # Patch DynamoDBHelper in the lambda_function module
         with patch.object(lambda_function, 'DynamoDBHelper', return_value=mock_db_instance):
             event = {
                 'httpMethod': 'POST',
                 'body': json.dumps({
+                    'sessionId': test_session_id,
                     'userMessage': 'Create a class diagram',
                     'diagramType': 'class'
                 })
             }
             
-            response = lambda_function.lambda_handler(event, None)
+            response = lambda_function.handler(event, None)
             
             assert response['statusCode'] == 200
             body = json.loads(response['body'])
             assert body['success'] is True
-            assert 'chatId' in body
+            assert 'messageId' in body
+            assert 'sessionId' in body
 
 
 if __name__ == '__main__':
