@@ -152,13 +152,22 @@
     - **Property 2: Session Creation State Reset**
     - **Validates: Requirements 1.2, 1.3**
 
-- [ ] 8. Update Sidebar component for session display
-  - [ ] 8.1 Refactor Sidebar to display sessions instead of messages
+- [x] 8. Update Sidebar component for session display
+
+
+
+
+
+  - [x] 8.1 Refactor Sidebar to display sessions instead of messages
+
+
     - Update `src/frontend/src/components/Sidebar.tsx`
     - Display session title and diagram type icon
     - Implement session selection handler
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
-  - [ ] 8.2 Implement date grouping utility for sessions
+  - [x] 8.2 Implement date grouping utility for sessions
+
+
     - Create utility function to group sessions by Today/Yesterday/Last 7 Days/Older
     - _Requirements: 3.1_
   - [ ]* 8.3 Write property test for session date grouping
