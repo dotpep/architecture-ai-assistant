@@ -2,18 +2,20 @@
 
 ## Overview
 
-This Lambda function handles CRUD (Create, Read, Update, Delete) operations for chat messages. Currently implements the save operation for storing chat messages to DynamoDB.
+This Lambda function handles CRUD (Create, Read, Update, Delete) operations for chat messages. Currently implements the save operation for storing chat messages to DynamoDB using a session-based data model.
 
 ## Functionality
 
 ### Save Chat Message (POST)
 
 Saves a chat message to DynamoDB with the following features:
-- Generates a unique `chatId` if not provided
+- Requires a valid `sessionId` to associate the message with a session
+- Generates a unique `messageId` if not provided
 - Automatically adds a timestamp
-- Validates required fields (`userMessage`, `diagramType`)
+- Validates required fields (`sessionId`, `userMessage`, `diagramType`)
 - Supports optional fields for diagram data
-- Returns confirmation with `chatId` and `timestamp`
+- Uses PK/SK pattern for efficient querying (PK: `SESSION#{sessionId}`, SK: `MSG#{timestamp}`)
+- Returns confirmation with `messageId`, `sessionId`, and `timestamp`
 
 ## API Specification
 
@@ -23,23 +25,25 @@ Saves a chat message to DynamoDB with the following features:
 ### Request Body
 
 **Required Fields:**
+- `sessionId` (string): UUID of the session this message belongs to
 - `userMessage` (string): The user's message/prompt
 - `diagramType` (string): Type of diagram (flowchart, erdiagram, sequence, class, state, architecture, dfd)
 
 **Optional Fields:**
-- `chatId` (string): Existing chat ID (generated if not provided)
+- `messageId` (string): Existing message ID (generated if not provided)
 - `aiResponse` (string): AI's response text
 - `mermaidCode` (string): Generated Mermaid diagram code
 - `imageUrl` (string): CloudFront URL for diagram PNG
 - `markdownUrl` (string): CloudFront URL for diagram markdown
 - `diagramImageS3Key` (string): S3 key for PNG image
 - `diagramMarkdownS3Key` (string): S3 key for markdown file
-- `status` (string): Status of the chat (pending, completed, failed)
+- `status` (string): Status of the message (pending, completed, failed)
 
 ### Request Example
 
 ```json
 {
+  "sessionId": "550e8400-e29b-41d4-a716-446655440000",
   "userMessage": "Create a flowchart for user authentication",
   "diagramType": "flowchart",
   "aiResponse": "Here is your authentication flowchart",
@@ -56,7 +60,8 @@ Saves a chat message to DynamoDB with the following features:
 ```json
 {
   "success": true,
-  "chatId": "550e8400-e29b-41d4-a716-446655440000",
+  "messageId": "660e8400-e29b-41d4-a716-446655440001",
+  "sessionId": "550e8400-e29b-41d4-a716-446655440000",
   "timestamp": 1702564800
 }
 ```
@@ -64,7 +69,7 @@ Saves a chat message to DynamoDB with the following features:
 **Error (400 - Bad Request):**
 ```json
 {
-  "error": "Missing required field: userMessage"
+  "error": "Missing required field: sessionId"
 }
 ```
 
@@ -77,12 +82,17 @@ Saves a chat message to DynamoDB with the following features:
 
 ## DynamoDB Schema
 
-### Table: chat_history
+### Table: chat_history (Session-based Model)
+
+The table uses a single-table design with PK/SK pattern to store both sessions and messages:
 
 | Attribute | Type | Key | Description |
 |-----------|------|-----|-------------|
-| chatId | String | Partition Key | UUID for the chat entry |
-| timestamp | Number | Sort Key | Unix timestamp |
+| PK | String | Partition Key | Format: `SESSION#{sessionId}` |
+| SK | String | Sort Key | Format: `MSG#{timestamp}` for messages, `METADATA` for sessions |
+| messageId | String | - | UUID for the message |
+| sessionId | String | - | UUID for the session |
+| timestamp | Number | - | Unix timestamp |
 | userMessage | String | - | User's prompt text |
 | diagramType | String | - | Type of diagram requested |
 | aiResponse | String | - | Full AI response text |
@@ -92,6 +102,20 @@ Saves a chat message to DynamoDB with the following features:
 | imageUrl | String | - | CloudFront URL for image |
 | markdownUrl | String | - | CloudFront URL for markdown |
 | status | String | - | pending, completed, failed |
+
+**Example Message Item:**
+```json
+{
+  "PK": "SESSION#550e8400-e29b-41d4-a716-446655440000",
+  "SK": "MSG#1702564800",
+  "messageId": "660e8400-e29b-41d4-a716-446655440001",
+  "sessionId": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": 1702564800,
+  "userMessage": "Create a flowchart",
+  "diagramType": "flowchart",
+  "status": "completed"
+}
+```
 
 ## Environment Variables
 
@@ -106,16 +130,18 @@ Saves a chat message to DynamoDB with the following features:
 ## Requirements Validation
 
 This implementation satisfies:
-- **Requirement 4.1**: Saves chat messages to DynamoDB with unique chat ID and timestamp
-- **Requirement 7.3**: POST /api/chat/save endpoint saves messages and returns confirmation
+- **Requirement 2.1**: Stores messages with reference to session ID
+- **Requirement 2.2**: Includes all required message fields (messageId, sessionId, timestamp, userMessage, diagramType, status)
+- **Requirement 5.4**: Associates messages with provided sessionId
 
 ## Error Handling
 
 The function handles the following error cases:
-1. Missing required fields (400)
-2. Invalid diagram type (400)
-3. Invalid JSON in request body (400)
-4. DynamoDB operation failures (500)
+1. Missing required fields (sessionId, userMessage, diagramType) (400)
+2. Invalid session ID format (400)
+3. Invalid diagram type (400)
+4. Invalid JSON in request body (400)
+5. DynamoDB operation failures (500)
 
 ## CORS Support
 
@@ -142,18 +168,19 @@ import json
 event = {
     'httpMethod': 'POST',
     'body': json.dumps({
+        'sessionId': '550e8400-e29b-41d4-a716-446655440000',
         'userMessage': 'Create a sequence diagram',
         'diagramType': 'sequence'
     })
 }
 
 # Call the handler
-response = lambda_handler(event, None)
+response = handler(event, None)
 
 # Response will contain:
 # {
 #   'statusCode': 200,
-#   'body': '{"success": true, "chatId": "...", "timestamp": 1702564800}'
+#   'body': '{"success": true, "messageId": "...", "sessionId": "...", "timestamp": 1702564800}'
 # }
 ```
 

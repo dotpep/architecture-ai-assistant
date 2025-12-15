@@ -1,11 +1,13 @@
 """
 Integration tests for DynamoDB operations
 Tests Lambda → DynamoDB connectivity
+Updated for session-based data model with PK/SK pattern
 """
 import json
 import os
 import time
 import boto3
+import uuid
 from decimal import Decimal
 
 # Initialize DynamoDB client
@@ -19,7 +21,7 @@ def handler(event, context):
     Test handler for DynamoDB CRUD operations
     
     Supports:
-    - PUT: Create/update an item
+    - PUT: Create/update an item (session or message)
     - GET: Retrieve an item
     """
     try:
@@ -28,20 +30,39 @@ def handler(event, context):
         operation = body.get('operation', 'PUT')
         
         if operation == 'PUT':
-            # Test PUT operation
-            chat_id = body.get('chatId', f'test-{int(time.time())}')
+            # Test PUT operation with PK/SK pattern
+            session_id = body.get('sessionId', str(uuid.uuid4()))
             timestamp = body.get('timestamp', int(time.time()))
             test_data = body.get('data', 'Test message')
+            item_type = body.get('itemType', 'message')  # 'session' or 'message'
             
-            # Put item to DynamoDB
-            response = table.put_item(
-                Item={
-                    'chatId': chat_id,
+            # Build item based on type
+            if item_type == 'session':
+                item = {
+                    'PK': f'SESSION#{session_id}',
+                    'SK': 'METADATA',
+                    'sessionId': session_id,
+                    'title': test_data,
+                    'diagramType': 'flowchart',
+                    'createdAt': timestamp,
+                    'updatedAt': timestamp,
+                    'messageCount': 0
+                }
+            else:  # message
+                message_id = body.get('messageId', str(uuid.uuid4()))
+                item = {
+                    'PK': f'SESSION#{session_id}',
+                    'SK': f'MSG#{timestamp}',
+                    'messageId': message_id,
+                    'sessionId': session_id,
                     'timestamp': timestamp,
                     'userMessage': test_data,
+                    'diagramType': 'flowchart',
                     'status': 'test'
                 }
-            )
+            
+            # Put item to DynamoDB
+            response = table.put_item(Item=item)
             
             return {
                 'statusCode': 200,
@@ -52,18 +73,19 @@ def handler(event, context):
                 'body': json.dumps({
                     'success': True,
                     'operation': 'PUT',
-                    'chatId': chat_id,
+                    'sessionId': session_id,
                     'timestamp': timestamp,
+                    'itemType': item_type,
                     'message': 'Item successfully written to DynamoDB'
                 })
             }
             
         elif operation == 'GET':
-            # Test GET operation
-            chat_id = body.get('chatId')
-            timestamp = body.get('timestamp')
+            # Test GET operation with PK/SK pattern
+            pk = body.get('PK')
+            sk = body.get('SK')
             
-            if not chat_id or not timestamp:
+            if not pk or not sk:
                 return {
                     'statusCode': 400,
                     'headers': {
@@ -72,15 +94,15 @@ def handler(event, context):
                     },
                     'body': json.dumps({
                         'success': False,
-                        'error': 'chatId and timestamp are required for GET operation'
+                        'error': 'PK and SK are required for GET operation'
                     })
                 }
             
             # Get item from DynamoDB
             response = table.get_item(
                 Key={
-                    'chatId': chat_id,
-                    'timestamp': timestamp
+                    'PK': pk,
+                    'SK': sk
                 }
             )
             

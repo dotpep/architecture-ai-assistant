@@ -161,7 +161,7 @@ chmod +x tests/integration/scripts/*.sh
 **Solution**: Use `diagrams/` prefix in file key
 
 ### DynamoDB Item Not Found
-**Solution**: Use exact chatId and timestamp from PUT operation
+**Solution**: Use exact PK and SK values from PUT operation (session-based data model with PK/SK pattern)
 
 ### CORS Errors
 **Solution**: Invalidate CloudFront cache
