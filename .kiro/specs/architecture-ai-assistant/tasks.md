@@ -439,18 +439,29 @@
   - Run `npm run build` to verify production build
   - _Requirements: 8.1_
 
-- [ ] 16. Create deployment scripts and documentation
-  - [ ] 16.1 Create deployment script
+- [x] 16. Create deployment scripts and documentation
+
+
+
+
+
+
+  - [x] 16.1 Create deployment script
+
     - Create `infrastructure/scripts/deploy.sh`
     - Implement one-command deployment (terraform + frontend upload)
     - Add CloudFront cache invalidation
     - _Requirements: 6.1, 6.2, 8.4_
-  - [ ] 16.2 Create README with deployment instructions
+  - [x] 16.2 Create README with deployment instructions
+
+
     - Document prerequisites (AWS CLI, Terraform, Node.js)
     - Document environment variables (LLM API key)
     - Document deployment steps
     - _Requirements: 6.1_
-  - [ ] 16.3 Create IAM user guide for Terraform
+  - [x] 16.3 Create IAM user guide for Terraform
+
+
     - Document required IAM permissions for Terraform user
     - Provide policy JSON for deployment user
     - _Requirements: 6.3_
