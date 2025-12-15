@@ -11,3 +11,5 @@ export { default as MermaidCodePreview } from './MermaidCodePreview';
 export { default as DiagramRenderer } from './DiagramRenderer';
 export { default as DownloadButtons } from './DownloadButtons';
 export { default as ChatContainer } from './ChatContainer';
+export { default as ErrorMessage, getErrorType } from './ErrorMessage';
+export type { ErrorType } from './ErrorMessage';

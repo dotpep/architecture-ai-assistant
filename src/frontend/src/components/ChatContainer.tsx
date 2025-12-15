@@ -12,6 +12,7 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import DownloadButtons from './DownloadButtons';
 import DiagramRenderer from './DiagramRenderer';
+import ErrorMessage, { getErrorType } from './ErrorMessage';
 
 interface ChatContainerProps {
   selectedDiagramType: DiagramType;
@@ -70,7 +71,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ selectedDiagramType }) =>
    * Generate a unique chat ID
    */
   const generateChatId = (): string => {
-    return `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `chat-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   };
 
   /**
@@ -128,13 +129,23 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ selectedDiagramType }) =>
     } catch (error) {
       console.error('Failed to generate diagram:', error);
       
+      // Determine error type for better messaging
+      const errorType = getErrorType(error);
+      const errorMessages: Record<string, string> = {
+        network: 'Unable to connect. Please check your internet connection.',
+        timeout: 'Request timed out. Please try again.',
+        invalid: 'Invalid response from server. Please try again.',
+        parse: 'Unable to render diagram. The generated code may be invalid.',
+        general: 'Failed to generate diagram. Please try again.',
+      };
+      
       // Update message with error status
       const failedMessage: ChatMessageType = {
         chatId,
         timestamp,
         userMessage,
         diagramType: selectedDiagramType,
-        aiResponse: error instanceof Error ? error.message : 'Failed to generate diagram',
+        aiResponse: error instanceof Error ? error.message : errorMessages[errorType],
         status: 'failed',
       };
 
@@ -221,33 +232,16 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ selectedDiagramType }) =>
 
   /**
    * Render history error state
+   * Requirements: 1.5
    */
   const renderHistoryError = () => (
-    <div className="flex items-center justify-center h-full">
-      <div className="flex flex-col items-center text-center px-4">
-        <div className="w-12 h-12 mb-3 rounded-full bg-red-100 flex items-center justify-center">
-          <svg 
-            className="w-6 h-6 text-red-600" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-            />
-          </svg>
-        </div>
-        <p className="text-sm text-red-600 mb-2">{historyError}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-sm text-indigo-600 hover:text-indigo-800 underline"
-        >
-          Refresh page
-        </button>
-      </div>
+    <div className="flex items-center justify-center h-full p-4">
+      <ErrorMessage
+        type="network"
+        message={historyError || 'Failed to load chat history'}
+        onRetry={() => window.location.reload()}
+        variant="card"
+      />
     </div>
   );
 
