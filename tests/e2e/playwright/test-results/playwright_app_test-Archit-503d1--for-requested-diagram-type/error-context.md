@@ -1,0 +1,782 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - button "Close sidebar" [ref=e7] [cursor=pointer]:
+          - img [ref=e8]
+        - generic [ref=e10]:
+          - img [ref=e12]
+          - generic [ref=e14]:
+            - heading "Architecture AI" [level=1] [ref=e15]
+            - paragraph [ref=e16]: Generate diagrams with AI
+      - generic [ref=e17]:
+        - generic [ref=e18]: "Diagram:"
+        - generic [ref=e19]:
+          - combobox [ref=e20] [cursor=pointer]:
+            - option "Flowchart" [selected]
+            - option "ER Diagram"
+            - option "Sequence"
+            - option "Class"
+            - option "State"
+            - option "Architecture"
+            - option "DFD"
+          - generic:
+            - img
+      - generic [ref=e24]: Online
+  - generic [ref=e25]:
+    - complementary [ref=e26]:
+      - generic [ref=e27]:
+        - button "New Chat" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+          - text: New Chat
+        - generic [ref=e33]:
+          - heading "Today" [level=3] [ref=e34]
+          - generic [ref=e35]:
+            - button "📊 Microservices architecture flowchart • pending" [ref=e36] [cursor=pointer]:
+              - generic [ref=e37]:
+                - generic [ref=e38]: 📊
+                - generic [ref=e39]:
+                  - paragraph [ref=e40]: Microservices architecture
+                  - paragraph [ref=e41]: flowchart • pending
+            - button "📊 Microservices architecture flowchart • completed" [ref=e42] [cursor=pointer]:
+              - generic [ref=e43]:
+                - generic [ref=e44]: 📊
+                - generic [ref=e45]:
+                  - paragraph [ref=e46]: Microservices architecture
+                  - paragraph [ref=e47]: flowchart • completed
+            - button "🏗️ Microservices architecture architecture • pending" [ref=e48] [cursor=pointer]:
+              - generic [ref=e49]:
+                - generic [ref=e50]: 🏗️
+                - generic [ref=e51]:
+                  - paragraph [ref=e52]: Microservices architecture
+                  - paragraph [ref=e53]: architecture • pending
+            - button "🏗️ Microservices architecture architecture • completed" [ref=e54] [cursor=pointer]:
+              - generic [ref=e55]:
+                - generic [ref=e56]: 🏗️
+                - generic [ref=e57]:
+                  - paragraph [ref=e58]: Microservices architecture
+                  - paragraph [ref=e59]: architecture • completed
+            - button "🏗️ Microservices architecture architecture • pending" [ref=e60] [cursor=pointer]:
+              - generic [ref=e61]:
+                - generic [ref=e62]: 🏗️
+                - generic [ref=e63]:
+                  - paragraph [ref=e64]: Microservices architecture
+                  - paragraph [ref=e65]: architecture • pending
+            - button "🏗️ Microservices architecture architecture • completed" [ref=e66] [cursor=pointer]:
+              - generic [ref=e67]:
+                - generic [ref=e68]: 🏗️
+                - generic [ref=e69]:
+                  - paragraph [ref=e70]: Microservices architecture
+                  - paragraph [ref=e71]: architecture • completed
+            - button "🏗️ production ready blog website ... architecture • pending" [ref=e72] [cursor=pointer]:
+              - generic [ref=e73]:
+                - generic [ref=e74]: 🏗️
+                - generic [ref=e75]:
+                  - paragraph [ref=e76]: production ready blog website ...
+                  - paragraph [ref=e77]: architecture • pending
+            - button "🏗️ production ready blog website ... architecture • completed" [ref=e78] [cursor=pointer]:
+              - generic [ref=e79]:
+                - generic [ref=e80]: 🏗️
+                - generic [ref=e81]:
+                  - paragraph [ref=e82]: production ready blog website ...
+                  - paragraph [ref=e83]: architecture • completed
+            - button "🏗️ production ready blog website ... architecture • pending" [ref=e84] [cursor=pointer]:
+              - generic [ref=e85]:
+                - generic [ref=e86]: 🏗️
+                - generic [ref=e87]:
+                  - paragraph [ref=e88]: production ready blog website ...
+                  - paragraph [ref=e89]: architecture • pending
+            - button "🏗️ production ready blog website ... architecture • completed" [ref=e90] [cursor=pointer]:
+              - generic [ref=e91]:
+                - generic [ref=e92]: 🏗️
+                - generic [ref=e93]:
+                  - paragraph [ref=e94]: production ready blog website ...
+                  - paragraph [ref=e95]: architecture • completed
+            - button "🏗️ production ready payment websi... architecture • completed" [ref=e96] [cursor=pointer]:
+              - generic [ref=e97]:
+                - generic [ref=e98]: 🏗️
+                - generic [ref=e99]:
+                  - paragraph [ref=e100]: production ready payment websi...
+                  - paragraph [ref=e101]: architecture • completed
+            - button "🏗️ production ready payment websi... architecture • pending" [ref=e102] [cursor=pointer]:
+              - generic [ref=e103]:
+                - generic [ref=e104]: 🏗️
+                - generic [ref=e105]:
+                  - paragraph [ref=e106]: production ready payment websi...
+                  - paragraph [ref=e107]: architecture • pending
+            - button "📊 Create a simple flowchart show... flowchart • completed" [ref=e108] [cursor=pointer]:
+              - generic [ref=e109]:
+                - generic [ref=e110]: 📊
+                - generic [ref=e111]:
+                  - paragraph [ref=e112]: Create a simple flowchart show...
+                  - paragraph [ref=e113]: flowchart • completed
+            - button "📊 Test message for verification flowchart • pending" [ref=e114] [cursor=pointer]:
+              - generic [ref=e115]:
+                - generic [ref=e116]: 📊
+                - generic [ref=e117]:
+                  - paragraph [ref=e118]: Test message for verification
+                  - paragraph [ref=e119]: flowchart • pending
+        - generic [ref=e121]:
+          - generic [ref=e122]: AI
+          - generic [ref=e123]:
+            - paragraph [ref=e124]: Architecture AI
+            - paragraph [ref=e125]: v1.0.0
+    - main [ref=e126]:
+      - generic [ref=e127]:
+        - generic [ref=e129]:
+          - generic [ref=e131]:
+            - generic [ref=e133]: U
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - generic [ref=e137]: You
+                  - generic [ref=e138]: 12:13 PM
+                  - generic [ref=e139]: Flowchart
+                - paragraph [ref=e140]: Microservices architecture
+              - generic [ref=e141]:
+                - img [ref=e143]
+                - generic [ref=e151]: Generating diagram...
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - generic [ref=e155]: U
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - generic [ref=e158]:
+                    - generic [ref=e159]: You
+                    - generic [ref=e160]: 12:13 PM
+                    - generic [ref=e161]: Flowchart
+                  - paragraph [ref=e162]: Microservices architecture
+                - generic [ref=e163]:
+                  - img [ref=e165]
+                  - generic [ref=e168]:
+                    - img [ref=e169]
+                    - generic [ref=e171]: Diagram generated successfully
+            - generic [ref=e173]:
+              - generic [ref=e175]:
+                - button "PNG Preview" [ref=e177] [cursor=pointer]:
+                  - img [ref=e178]
+                  - text: PNG Preview
+                - generic [ref=e181]:
+                  - generic [ref=e183]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from A to B"
+                          - button "Edge from B to C" [ref=e184] [cursor=pointer]:
+                            - generic [ref=e185]:
+                              - generic: Request
+                          - button "Edge from C to D" [ref=e187] [cursor=pointer]:
+                            - generic [ref=e188]:
+                              - generic: Registered Services
+                          - button "Edge from D to E" [ref=e190] [cursor=pointer]:
+                            - generic [ref=e191]:
+                              - generic: Route Request
+                          - button "Edge from D to F" [ref=e193] [cursor=pointer]:
+                            - generic [ref=e196]:
+                              - generic: Route Request
+                          - button "Edge from D to G" [ref=e198] [cursor=pointer]:
+                            - generic [ref=e201]:
+                              - generic: Route Request
+                          - button "Edge from E to B" [ref=e203] [cursor=pointer]:
+                            - generic [ref=e204]:
+                              - generic: Response
+                          - button "Edge from F to B" [ref=e206] [cursor=pointer]:
+                            - generic [ref=e209]:
+                              - generic: Response
+                          - button "Edge from G to B" [ref=e211] [cursor=pointer]:
+                            - generic [ref=e214]:
+                              - generic: Response
+                          - button "Edge from B to A" [ref=e216] [cursor=pointer]:
+                            - generic [ref=e217]:
+                              - generic: Response
+                          - button "Edge from E to H" [ref=e219] [cursor=pointer]:
+                            - generic [ref=e220]:
+                              - generic: Data Access
+                          - button "Edge from F to I" [ref=e222] [cursor=pointer]:
+                            - generic [ref=e223]:
+                              - generic: Message
+                          - button "Edge from G to J" [ref=e225] [cursor=pointer]:
+                            - generic [ref=e226]:
+                              - generic: Cache
+                      - generic:
+                        - button "Client" [ref=e228] [cursor=pointer]: Client
+                        - button "B" [ref=e231] [cursor=pointer]: B
+                        - button "Service Discovery" [ref=e234] [cursor=pointer]: Service Discovery
+                        - button "Load Balancer" [ref=e237] [cursor=pointer]: Load Balancer
+                        - button "Microservice 1" [ref=e240] [cursor=pointer]: Microservice 1
+                        - button "Microservice 2" [ref=e243] [cursor=pointer]: Microservice 2
+                        - button "Microservice 3" [ref=e246] [cursor=pointer]: Microservice 3
+                        - button "Database" [ref=e249] [cursor=pointer]: Database
+                        - button "Message Queue" [ref=e252] [cursor=pointer]: Message Queue
+                        - button "Cache" [ref=e255] [cursor=pointer]: Cache
+                  - img [ref=e258]
+                  - generic [ref=e260]:
+                    - button "zoom in" [ref=e261] [cursor=pointer]:
+                      - img [ref=e262]
+                    - button "zoom out" [ref=e264] [cursor=pointer]:
+                      - img [ref=e265]
+                    - button "fit view" [ref=e267] [cursor=pointer]:
+                      - img [ref=e268]
+                  - img "React Flow mini map" [ref=e271]
+                  - generic [ref=e282]: Flowchart
+                  - link "React Flow attribution" [ref=e284] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e287]:
+                - generic [ref=e288]:
+                  - button "Code" [ref=e289] [cursor=pointer]:
+                    - img [ref=e290]
+                    - text: Code
+                  - button "Copy" [ref=e292] [cursor=pointer]:
+                    - img [ref=e293]
+                    - text: Copy
+                - generic [ref=e295]:
+                  - button "PNG" [ref=e296] [cursor=pointer]:
+                    - img [ref=e297]
+                    - text: PNG
+                  - button "MD" [ref=e299] [cursor=pointer]:
+                    - img [ref=e300]
+                    - text: MD
+          - generic [ref=e303]:
+            - generic [ref=e305]: U
+            - generic [ref=e306]:
+              - generic [ref=e307]:
+                - generic [ref=e308]:
+                  - generic [ref=e309]: You
+                  - generic [ref=e310]: 12:14 PM
+                  - generic [ref=e311]: Architecture
+                - paragraph [ref=e312]: Microservices architecture
+              - generic [ref=e313]:
+                - img [ref=e315]
+                - generic [ref=e323]: Generating diagram...
+          - generic [ref=e324]:
+            - generic [ref=e325]:
+              - generic [ref=e327]: U
+              - generic [ref=e328]:
+                - generic [ref=e329]:
+                  - generic [ref=e330]:
+                    - generic [ref=e331]: You
+                    - generic [ref=e332]: 12:14 PM
+                    - generic [ref=e333]: Architecture
+                  - paragraph [ref=e334]: Microservices architecture
+                - generic [ref=e335]:
+                  - img [ref=e337]
+                  - generic [ref=e340]:
+                    - img [ref=e341]
+                    - generic [ref=e343]: Diagram generated successfully
+            - generic [ref=e345]:
+              - generic [ref=e347]:
+                - button "PNG Preview" [ref=e349] [cursor=pointer]:
+                  - img [ref=e350]
+                  - text: PNG Preview
+                - generic [ref=e353]:
+                  - generic [ref=e355]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from LB to AG"
+                          - button "Edge from AG to S1"
+                          - button "Edge from AG to S2" [ref=e356] [cursor=pointer]
+                          - button "Edge from AG to S3" [ref=e359] [cursor=pointer]
+                          - button "Edge from S1 to DB1"
+                          - button "Edge from S2 to DB2" [ref=e362] [cursor=pointer]
+                          - button "Edge from S3 to DB3" [ref=e365] [cursor=pointer]
+                          - button "Edge from S1 to MQ" [ref=e368] [cursor=pointer]
+                          - button "Edge from S2 to MQ"
+                          - button "Edge from S3 to MQ" [ref=e371] [cursor=pointer]
+                          - button "Edge from MQ to S1" [ref=e374] [cursor=pointer]
+                          - button "Edge from MQ to S2"
+                          - button "Edge from MQ to S3" [ref=e377] [cursor=pointer]
+                      - generic:
+                        - button "Load Balancer" [ref=e380] [cursor=pointer]: Load Balancer
+                        - button "API Gateway" [ref=e383] [cursor=pointer]: API Gateway
+                        - button "User Service" [ref=e386] [cursor=pointer]: User Service
+                        - button "Order Service" [ref=e389] [cursor=pointer]: Order Service
+                        - button "Payment Service" [ref=e392] [cursor=pointer]: Payment Service
+                        - button "(User Database)" [ref=e395] [cursor=pointer]: (User Database)
+                        - button "(Order Database)" [ref=e398] [cursor=pointer]: (Order Database)
+                        - button "(Payment Database)" [ref=e401] [cursor=pointer]: (Payment Database)
+                        - button "Message Queue" [ref=e404] [cursor=pointer]: Message Queue
+                  - img [ref=e407]
+                  - generic [ref=e409]:
+                    - button "zoom in" [ref=e410] [cursor=pointer]:
+                      - img [ref=e411]
+                    - button "zoom out" [ref=e413] [cursor=pointer]:
+                      - img [ref=e414]
+                    - button "fit view" [ref=e416] [cursor=pointer]:
+                      - img [ref=e417]
+                  - img "React Flow mini map" [ref=e420]
+                  - generic [ref=e430]: Flowchart
+                  - link "React Flow attribution" [ref=e432] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e435]:
+                - generic [ref=e436]:
+                  - button "Code" [ref=e437] [cursor=pointer]:
+                    - img [ref=e438]
+                    - text: Code
+                  - button "Copy" [ref=e440] [cursor=pointer]:
+                    - img [ref=e441]
+                    - text: Copy
+                - generic [ref=e443]:
+                  - button "PNG" [ref=e444] [cursor=pointer]:
+                    - img [ref=e445]
+                    - text: PNG
+                  - button "MD" [ref=e447] [cursor=pointer]:
+                    - img [ref=e448]
+                    - text: MD
+          - generic [ref=e451]:
+            - generic [ref=e453]: U
+            - generic [ref=e454]:
+              - generic [ref=e455]:
+                - generic [ref=e456]:
+                  - generic [ref=e457]: You
+                  - generic [ref=e458]: 12:27 PM
+                  - generic [ref=e459]: Architecture
+                - paragraph [ref=e460]: Microservices architecture
+              - generic [ref=e461]:
+                - img [ref=e463]
+                - generic [ref=e471]: Generating diagram...
+          - generic [ref=e472]:
+            - generic [ref=e473]:
+              - generic [ref=e475]: U
+              - generic [ref=e476]:
+                - generic [ref=e477]:
+                  - generic [ref=e478]:
+                    - generic [ref=e479]: You
+                    - generic [ref=e480]: 12:27 PM
+                    - generic [ref=e481]: Architecture
+                  - paragraph [ref=e482]: Microservices architecture
+                - generic [ref=e483]:
+                  - img [ref=e485]
+                  - generic [ref=e488]:
+                    - img [ref=e489]
+                    - generic [ref=e491]: Diagram generated successfully
+            - generic [ref=e493]:
+              - generic [ref=e495]:
+                - button "PNG Preview" [ref=e497] [cursor=pointer]:
+                  - img [ref=e498]
+                  - text: PNG Preview
+                - generic [ref=e501]:
+                  - generic [ref=e503]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from LB to AG"
+                          - button "Edge from AG to MS1"
+                          - button "Edge from AG to MS2" [ref=e504] [cursor=pointer]
+                          - button "Edge from AG to MS3" [ref=e507] [cursor=pointer]
+                          - button "Edge from MS1 to DB1"
+                          - button "Edge from MS2 to DB2" [ref=e510] [cursor=pointer]
+                          - button "Edge from MS3 to DB3" [ref=e513] [cursor=pointer]
+                          - button "Edge from MS1 to MB" [ref=e516] [cursor=pointer]
+                          - button "Edge from MS2 to MB"
+                          - button "Edge from MS3 to MB" [ref=e519] [cursor=pointer]
+                          - button "Edge from MB to MS1" [ref=e522] [cursor=pointer]
+                          - button "Edge from MB to MS2"
+                          - button "Edge from MB to MS3" [ref=e525] [cursor=pointer]
+                      - generic:
+                        - button "Load Balancer" [ref=e528] [cursor=pointer]: Load Balancer
+                        - button "API Gateway" [ref=e531] [cursor=pointer]: API Gateway
+                        - button "User Service" [ref=e534] [cursor=pointer]: User Service
+                        - button "Product Service" [ref=e537] [cursor=pointer]: Product Service
+                        - button "Order Service" [ref=e540] [cursor=pointer]: Order Service
+                        - button "(User Database)" [ref=e543] [cursor=pointer]: (User Database)
+                        - button "(Product Database)" [ref=e546] [cursor=pointer]: (Product Database)
+                        - button "(Order Database)" [ref=e549] [cursor=pointer]: (Order Database)
+                        - button "Message Broker" [ref=e552] [cursor=pointer]: Message Broker
+                  - img [ref=e555]
+                  - generic [ref=e557]:
+                    - button "zoom in" [ref=e558] [cursor=pointer]:
+                      - img [ref=e559]
+                    - button "zoom out" [ref=e561] [cursor=pointer]:
+                      - img [ref=e562]
+                    - button "fit view" [ref=e564] [cursor=pointer]:
+                      - img [ref=e565]
+                  - img "React Flow mini map" [ref=e568]
+                  - generic [ref=e578]: Flowchart
+                  - link "React Flow attribution" [ref=e580] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e583]:
+                - generic [ref=e584]:
+                  - button "Code" [ref=e585] [cursor=pointer]:
+                    - img [ref=e586]
+                    - text: Code
+                  - button "Copy" [ref=e588] [cursor=pointer]:
+                    - img [ref=e589]
+                    - text: Copy
+                - generic [ref=e591]:
+                  - button "PNG" [ref=e592] [cursor=pointer]:
+                    - img [ref=e593]
+                    - text: PNG
+                  - button "MD" [ref=e595] [cursor=pointer]:
+                    - img [ref=e596]
+                    - text: MD
+          - generic [ref=e599]:
+            - generic [ref=e601]: U
+            - generic [ref=e602]:
+              - generic [ref=e603]:
+                - generic [ref=e604]:
+                  - generic [ref=e605]: You
+                  - generic [ref=e606]: 12:46 PM
+                  - generic [ref=e607]: Architecture
+                - paragraph [ref=e608]: production ready blog website monolith software architecture and system design
+              - generic [ref=e609]:
+                - img [ref=e611]
+                - generic [ref=e619]: Generating diagram...
+          - generic [ref=e620]:
+            - generic [ref=e621]:
+              - generic [ref=e623]: U
+              - generic [ref=e624]:
+                - generic [ref=e625]:
+                  - generic [ref=e626]:
+                    - generic [ref=e627]: You
+                    - generic [ref=e628]: 12:46 PM
+                    - generic [ref=e629]: Architecture
+                  - paragraph [ref=e630]: production ready blog website monolith software architecture and system design
+                - generic [ref=e631]:
+                  - img [ref=e633]
+                  - generic [ref=e636]:
+                    - img [ref=e637]
+                    - generic [ref=e639]: Diagram generated successfully
+            - generic [ref=e641]:
+              - generic [ref=e643]:
+                - button "PNG Preview" [ref=e645] [cursor=pointer]:
+                  - img [ref=e646]
+                  - text: PNG Preview
+                - generic [ref=e649]:
+                  - generic [ref=e651]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from Browser to LB"
+                          - button "Edge from Mobile to LB" [ref=e652] [cursor=pointer]
+                          - button "Edge from LB to WebServer"
+                          - button "Edge from WebServer to AppServer"
+                          - button "Edge from AppServer to BlogEngine"
+                          - button "Edge from BlogEngine to DB"
+                          - button "Edge from BlogEngine to FileStorage" [ref=e655] [cursor=pointer]
+                          - button "Edge from BlogEngine to SearchEngine" [ref=e658] [cursor=pointer]
+                          - button "Edge from BlogEngine to Cache" [ref=e661] [cursor=pointer]
+                          - button "Edge from Cache to DB" [ref=e664] [cursor=pointer]
+                          - button "Edge from SearchEngine to DB" [ref=e667] [cursor=pointer]
+                      - generic:
+                        - button "Web Browser" [ref=e670] [cursor=pointer]: Web Browser
+                        - button "Mobile Device" [ref=e673] [cursor=pointer]: Mobile Device
+                        - button "Load Balancer" [ref=e676] [cursor=pointer]: Load Balancer
+                        - button "Web Server (NGINX/Apache)" [ref=e679] [cursor=pointer]: Web Server (NGINX/Apache)
+                        - button "Application Server (Node/Java)" [ref=e682] [cursor=pointer]: Application Server (Node/Java)
+                        - button "Blog Engine (CMS)" [ref=e685] [cursor=pointer]: Blog Engine (CMS)
+                        - button "(Relational Database)" [ref=e688] [cursor=pointer]: (Relational Database)
+                        - button "(File Storage)" [ref=e691] [cursor=pointer]: (File Storage)
+                        - button "(Cache Layer)" [ref=e694] [cursor=pointer]: (Cache Layer)
+                        - button "Search Engine (Elasticsearch)" [ref=e697] [cursor=pointer]: Search Engine (Elasticsearch)
+                  - img [ref=e700]
+                  - generic [ref=e702]:
+                    - button "zoom in" [ref=e703] [cursor=pointer]:
+                      - img [ref=e704]
+                    - button "zoom out" [ref=e706] [cursor=pointer]:
+                      - img [ref=e707]
+                    - button "fit view" [ref=e709] [cursor=pointer]:
+                      - img [ref=e710]
+                  - img "React Flow mini map" [ref=e713]
+                  - generic [ref=e724]: Flowchart
+                  - link "React Flow attribution" [ref=e726] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e729]:
+                - generic [ref=e730]:
+                  - button "Code" [ref=e731] [cursor=pointer]:
+                    - img [ref=e732]
+                    - text: Code
+                  - button "Copy" [ref=e734] [cursor=pointer]:
+                    - img [ref=e735]
+                    - text: Copy
+                - generic [ref=e737]:
+                  - button "PNG" [ref=e738] [cursor=pointer]:
+                    - img [ref=e739]
+                    - text: PNG
+                  - button "MD" [ref=e741] [cursor=pointer]:
+                    - img [ref=e742]
+                    - text: MD
+          - generic [ref=e745]:
+            - generic [ref=e747]: U
+            - generic [ref=e748]:
+              - generic [ref=e749]:
+                - generic [ref=e750]:
+                  - generic [ref=e751]: You
+                  - generic [ref=e752]: 12:47 PM
+                  - generic [ref=e753]: Architecture
+                - paragraph [ref=e754]: production ready blog website monolith software architecture and system design
+              - generic [ref=e755]:
+                - img [ref=e757]
+                - generic [ref=e765]: Generating diagram...
+          - generic [ref=e766]:
+            - generic [ref=e767]:
+              - generic [ref=e769]: U
+              - generic [ref=e770]:
+                - generic [ref=e771]:
+                  - generic [ref=e772]:
+                    - generic [ref=e773]: You
+                    - generic [ref=e774]: 12:47 PM
+                    - generic [ref=e775]: Architecture
+                  - paragraph [ref=e776]: production ready blog website monolith software architecture and system design
+                - generic [ref=e777]:
+                  - img [ref=e779]
+                  - generic [ref=e782]:
+                    - img [ref=e783]
+                    - generic [ref=e785]: Diagram generated successfully
+            - generic [ref=e787]:
+              - generic [ref=e789]:
+                - button "PNG Preview" [ref=e791] [cursor=pointer]:
+                  - img [ref=e792]
+                  - text: PNG Preview
+                - generic [ref=e795]:
+                  - generic [ref=e797]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from Browser to Server"
+                          - button "Edge from Mobile to Server" [ref=e798] [cursor=pointer]
+                          - button "Edge from Server to SSL"
+                          - button "Edge from Server to Firewall" [ref=e801] [cursor=pointer]
+                          - button "Edge from Server to App" [ref=e804] [cursor=pointer]
+                          - button "Edge from App to Template" [ref=e807] [cursor=pointer]
+                          - button "Edge from App to Renderer" [ref=e810] [cursor=pointer]
+                          - button "Edge from App to DB"
+                          - button "Edge from App to Cache" [ref=e813] [cursor=pointer]
+                          - button "Edge from DB to Cache" [ref=e816] [cursor=pointer]
+                          - button "Edge from App to FileStorage" [ref=e819] [cursor=pointer]
+                          - button "Edge from Cache to DB" [ref=e822] [cursor=pointer]
+                      - generic:
+                        - button "Web Browser" [ref=e825] [cursor=pointer]: Web Browser
+                        - button "Mobile Browser" [ref=e828] [cursor=pointer]: Mobile Browser
+                        - button "Web Server (NGINX/Apache)" [ref=e831] [cursor=pointer]: Web Server (NGINX/Apache)
+                        - button "SSL/TLS Encryption" [ref=e834] [cursor=pointer]: SSL/TLS Encryption
+                        - button "Firewall" [ref=e837] [cursor=pointer]: Firewall
+                        - button "Blog Website Application" [ref=e840] [cursor=pointer]: Blog Website Application
+                        - button "Template Engine" [ref=e843] [cursor=pointer]: Template Engine
+                        - button "Page Renderer" [ref=e846] [cursor=pointer]: Page Renderer
+                        - 'button "(Relational Database: MySQL/PostgreSQL)" [ref=e849] [cursor=pointer]': "(Relational Database: MySQL/PostgreSQL)"
+                        - 'button "(Cache Layer: Redis/Memcached)" [ref=e852] [cursor=pointer]': "(Cache Layer: Redis/Memcached)"
+                        - 'button "(File Storage: Local/S3)" [ref=e855] [cursor=pointer]': "(File Storage: Local/S3)"
+                  - img [ref=e858]
+                  - generic [ref=e860]:
+                    - button "zoom in" [ref=e861] [cursor=pointer]:
+                      - img [ref=e862]
+                    - button "zoom out" [ref=e864] [cursor=pointer]:
+                      - img [ref=e865]
+                    - button "fit view" [ref=e867] [cursor=pointer]:
+                      - img [ref=e868]
+                  - img "React Flow mini map" [ref=e871]
+                  - generic [ref=e883]: Flowchart
+                  - link "React Flow attribution" [ref=e885] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e888]:
+                - generic [ref=e889]:
+                  - button "Code" [ref=e890] [cursor=pointer]:
+                    - img [ref=e891]
+                    - text: Code
+                  - button "Copy" [ref=e893] [cursor=pointer]:
+                    - img [ref=e894]
+                    - text: Copy
+                - generic [ref=e896]:
+                  - button "PNG" [ref=e897] [cursor=pointer]:
+                    - img [ref=e898]
+                    - text: PNG
+                  - button "MD" [ref=e900] [cursor=pointer]:
+                    - img [ref=e901]
+                    - text: MD
+          - generic [ref=e903]:
+            - generic [ref=e904]:
+              - generic [ref=e906]: U
+              - generic [ref=e907]:
+                - generic [ref=e908]:
+                  - generic [ref=e909]:
+                    - generic [ref=e910]: You
+                    - generic [ref=e911]: 12:47 PM
+                    - generic [ref=e912]: Architecture
+                  - paragraph [ref=e913]: production ready payment website monolith software architecture and system design
+                - generic [ref=e914]:
+                  - img [ref=e916]
+                  - generic [ref=e919]:
+                    - img [ref=e920]
+                    - generic [ref=e922]: Diagram generated successfully
+            - generic [ref=e924]:
+              - generic [ref=e926]:
+                - button "PNG Preview" [ref=e928] [cursor=pointer]:
+                  - img [ref=e929]
+                  - text: PNG Preview
+                - generic [ref=e932]:
+                  - generic [ref=e934]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from WebUI to PaymentGateway"
+                          - button "Edge from MobileApp to PaymentGateway" [ref=e935] [cursor=pointer]
+                          - button "Edge from PaymentGateway to Auth"
+                          - button "Edge from Auth to OrderService"
+                          - button "Edge from OrderService to PaymentService"
+                          - button "Edge from PaymentService to Database"
+                          - button "Edge from PaymentService to PaymentDatabase" [ref=e938] [cursor=pointer]
+                          - button "Edge from PaymentService to OrderDatabase" [ref=e941] [cursor=pointer]
+                          - button "Edge from PaymentGateway to ThirdPartyPaymentGateway" [ref=e944] [cursor=pointer]
+                          - button "Edge from PaymentGateway to BankAPI" [ref=e947] [cursor=pointer]
+                          - button "Edge from PaymentDatabase to BankAPI" [ref=e950] [cursor=pointer]
+                          - button "Edge from OrderDatabase to Database" [ref=e953] [cursor=pointer]
+                      - generic:
+                        - button "Web UI" [ref=e956] [cursor=pointer]: Web UI
+                        - button "Mobile App" [ref=e959] [cursor=pointer]: Mobile App
+                        - button "Payment Gateway" [ref=e962] [cursor=pointer]: Payment Gateway
+                        - button "Authentication Service" [ref=e965] [cursor=pointer]: Authentication Service
+                        - button "Order Service" [ref=e968] [cursor=pointer]: Order Service
+                        - button "Payment Service" [ref=e971] [cursor=pointer]: Payment Service
+                        - button "(Database)" [ref=e974] [cursor=pointer]: (Database)
+                        - button "(Payment Database)" [ref=e977] [cursor=pointer]: (Payment Database)
+                        - button "(Order Database)" [ref=e980] [cursor=pointer]: (Order Database)
+                        - button "Third Party Payment Gateway" [ref=e983] [cursor=pointer]: Third Party Payment Gateway
+                        - button "Bank API" [ref=e986] [cursor=pointer]: Bank API
+                  - img [ref=e989]
+                  - generic [ref=e991]:
+                    - button "zoom in" [ref=e992] [cursor=pointer]:
+                      - img [ref=e993]
+                    - button "zoom out" [ref=e995] [cursor=pointer]:
+                      - img [ref=e996]
+                    - button "fit view" [ref=e998] [cursor=pointer]:
+                      - img [ref=e999]
+                  - img "React Flow mini map" [ref=e1002]
+                  - generic [ref=e1014]: Flowchart
+                  - link "React Flow attribution" [ref=e1016] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e1019]:
+                - generic [ref=e1020]:
+                  - button "Code" [ref=e1021] [cursor=pointer]:
+                    - img [ref=e1022]
+                    - text: Code
+                  - button "Copy" [ref=e1024] [cursor=pointer]:
+                    - img [ref=e1025]
+                    - text: Copy
+                - generic [ref=e1027]:
+                  - button "PNG" [ref=e1028] [cursor=pointer]:
+                    - img [ref=e1029]
+                    - text: PNG
+                  - button "MD" [ref=e1031] [cursor=pointer]:
+                    - img [ref=e1032]
+                    - text: MD
+          - generic [ref=e1035]:
+            - generic [ref=e1037]: U
+            - generic [ref=e1038]:
+              - generic [ref=e1039]:
+                - generic [ref=e1040]:
+                  - generic [ref=e1041]: You
+                  - generic [ref=e1042]: 12:47 PM
+                  - generic [ref=e1043]: Architecture
+                - paragraph [ref=e1044]: production ready payment website monolith software architecture and system design
+              - generic [ref=e1045]:
+                - img [ref=e1047]
+                - generic [ref=e1055]: Generating diagram...
+          - generic [ref=e1056]:
+            - generic [ref=e1057]:
+              - generic [ref=e1059]: U
+              - generic [ref=e1060]:
+                - generic [ref=e1061]:
+                  - generic [ref=e1062]:
+                    - generic [ref=e1063]: You
+                    - generic [ref=e1064]: 01:45 PM
+                    - generic [ref=e1065]: Flowchart
+                  - paragraph [ref=e1066]: Create a simple flowchart showing a user login process with email and password validation
+                - generic [ref=e1067]:
+                  - img [ref=e1069]
+                  - generic [ref=e1072]:
+                    - img [ref=e1073]
+                    - generic [ref=e1075]: Diagram generated successfully
+            - generic [ref=e1077]:
+              - generic [ref=e1079]:
+                - button "PNG Preview" [ref=e1081] [cursor=pointer]:
+                  - img [ref=e1082]
+                  - text: PNG Preview
+                - generic [ref=e1085]:
+                  - generic [ref=e1087]:
+                    - generic:
+                      - img:
+                        - generic:
+                          - button "Edge from A to B"
+                          - button "Edge from B to C" [ref=e1088] [cursor=pointer]:
+                            - generic [ref=e1089]:
+                              - generic: Valid Email
+                          - button "Edge from B to D" [ref=e1091] [cursor=pointer]:
+                            - generic [ref=e1094]:
+                              - generic: Invalid Email
+                          - button "Edge from C to E" [ref=e1096] [cursor=pointer]:
+                            - generic [ref=e1097]:
+                              - generic: Valid Password
+                          - button "Edge from C to F" [ref=e1099] [cursor=pointer]:
+                            - generic [ref=e1102]:
+                              - generic: Invalid Password
+                          - button "Edge from D to G" [ref=e1104] [cursor=pointer]
+                          - button "Edge from F to G" [ref=e1107] [cursor=pointer]
+                          - button "Edge from G to B" [ref=e1110] [cursor=pointer]
+                          - button "Edge from E to H"
+                      - generic:
+                        - button "Start" [ref=e1113] [cursor=pointer]: Start
+                        - button "B" [ref=e1116] [cursor=pointer]: B
+                        - button "C" [ref=e1119] [cursor=pointer]: C
+                        - 'button "Error: Invalid Email" [ref=e1122] [cursor=pointer]': "Error: Invalid Email"
+                        - button "Login Successful" [ref=e1125] [cursor=pointer]: Login Successful
+                        - 'button "Error: Invalid Password" [ref=e1128] [cursor=pointer]': "Error: Invalid Password"
+                        - button "Retry Login" [ref=e1131] [cursor=pointer]: Retry Login
+                        - button "End" [ref=e1134] [cursor=pointer]: End
+                  - img [ref=e1137]
+                  - generic [ref=e1139]:
+                    - button "zoom in" [ref=e1140] [cursor=pointer]:
+                      - img [ref=e1141]
+                    - button "zoom out" [ref=e1143] [cursor=pointer]:
+                      - img [ref=e1144]
+                    - button "fit view" [ref=e1146] [cursor=pointer]:
+                      - img [ref=e1147]
+                  - img "React Flow mini map" [ref=e1150]
+                  - generic [ref=e1159]: Flowchart
+                  - link "React Flow attribution" [ref=e1161] [cursor=pointer]:
+                    - /url: https://reactflow.dev
+                    - text: React Flow
+              - generic [ref=e1164]:
+                - generic [ref=e1165]:
+                  - button "Code" [ref=e1166] [cursor=pointer]:
+                    - img [ref=e1167]
+                    - text: Code
+                  - button "Copy" [ref=e1169] [cursor=pointer]:
+                    - img [ref=e1170]
+                    - text: Copy
+                - generic [ref=e1172]:
+                  - button "PNG" [ref=e1173] [cursor=pointer]:
+                    - img [ref=e1174]
+                    - text: PNG
+                  - button "MD" [ref=e1176] [cursor=pointer]:
+                    - img [ref=e1177]
+                    - text: MD
+          - generic [ref=e1180]:
+            - generic [ref=e1182]: U
+            - generic [ref=e1183]:
+              - generic [ref=e1184]:
+                - generic [ref=e1185]:
+                  - generic [ref=e1186]: You
+                  - generic [ref=e1187]: 01:46 PM
+                  - generic [ref=e1188]: Flowchart
+                - paragraph [ref=e1189]: Test message for verification
+              - generic [ref=e1190]:
+                - img [ref=e1192]
+                - generic [ref=e1200]: Generating diagram...
+        - generic [ref=e1204]:
+          - generic [ref=e1205]:
+            - textbox "Message input" [ref=e1207]:
+              - /placeholder: Describe the diagram you want to create...
+            - button "Send message" [disabled] [ref=e1208]:
+              - img [ref=e1209]
+          - paragraph [ref=e1211]: Press Enter to send, Shift+Enter for new line
+```
