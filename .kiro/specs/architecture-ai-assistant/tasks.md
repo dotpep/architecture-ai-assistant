@@ -429,7 +429,12 @@
     - Add retry functionality for failed requests
     - _Requirements: 1.5_
 
-- [ ] 15. Checkpoint - Frontend application
+- [x] 15. Checkpoint - Frontend application
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
   - Run `npm run build` to verify production build
   - _Requirements: 8.1_
