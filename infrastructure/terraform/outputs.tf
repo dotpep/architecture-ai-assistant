@@ -55,3 +55,8 @@ output "lambda_get_history_arn" {
   description = "ARN of the get_history Lambda function"
   value       = aws_lambda_function.get_history.arn
 }
+
+output "lambda_session_crud_arn" {
+  description = "ARN of the session_crud Lambda function"
+  value       = aws_lambda_function.session_crud.arn
+}

@@ -55,13 +55,10 @@ def validate_request(body: Dict[str, Any]) -> tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
-    # sessionId is required
-    if 'sessionId' not in body or not body['sessionId']:
-        return False, "Missing required field: sessionId"
-    
-    # Validate sessionId format
-    if not validate_session_id(body['sessionId']):
-        return False, "Invalid session ID format"
+    # sessionId is optional - if provided, validate format
+    if 'sessionId' in body and body['sessionId']:
+        if not validate_session_id(body['sessionId']):
+            return False, "Invalid session ID format"
     
     # userMessage is required
     if 'userMessage' not in body or not body['userMessage']:
@@ -81,6 +78,7 @@ def validate_request(body: Dict[str, Any]) -> tuple[bool, str]:
 def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict[str, Any]:
     """
     Save a chat message to DynamoDB using session-based PK/SK pattern.
+    Supports both session-based and legacy (sessionless) saves.
     
     Args:
         event: Lambda event containing the request
@@ -98,11 +96,16 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         if not is_valid:
             return create_response(400, {'error': error_message})
         
-        # Extract sessionId from request
-        session_id = body['sessionId']
+        # Extract sessionId from request (optional - generate if not provided)
+        session_id = body.get('sessionId')
+        if not session_id:
+            # Generate a new session ID for legacy/standalone saves
+            from utils import generate_session_id
+            session_id = generate_session_id()
         
-        # Generate messageId
+        # Generate messageId (also used as chatId for legacy compatibility)
         message_id = body.get('messageId', generate_message_id())
+        chat_id = message_id  # For legacy compatibility
         
         # Generate timestamp
         timestamp = get_current_timestamp()
@@ -114,6 +117,7 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
             'PK': f'SESSION#{session_id}',
             'SK': f'MSG#{timestamp}',
             'messageId': message_id,
+            'chatId': chat_id,  # Legacy compatibility
             'sessionId': session_id,
             'timestamp': timestamp,
             'userMessage': body['userMessage'],
@@ -138,9 +142,10 @@ def save_message(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Dict
         # Save to DynamoDB
         dynamodb_helper.put_item(item)
         
-        # Return success response
+        # Return success response (include chatId for legacy compatibility)
         return create_response(200, {
             'success': True,
+            'chatId': chat_id,
             'messageId': message_id,
             'sessionId': session_id,
             'timestamp': timestamp

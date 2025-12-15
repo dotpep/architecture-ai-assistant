@@ -156,9 +156,9 @@ def get_messages_by_session(event: Dict[str, Any], dynamodb_helper: DynamoDBHelp
         # Convert Decimals to int/float for JSON serialization
         items = convert_decimals(result['items'])
         
-        # Prepare response
+        # Prepare response (use 'chats' for consistency with legacy endpoint)
         response_body = {
-            'messages': items,
+            'chats': items,
             'count': len(items),
             'sessionId': session_id
         }

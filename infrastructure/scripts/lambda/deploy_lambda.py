@@ -20,7 +20,7 @@ SHARED_DIR = PROJECT_ROOT / "src" / "backend" / "shared"
 BUILD_DIR = PROJECT_ROOT / "build" / "lambda"
 TERRAFORM_DIR = PROJECT_ROOT / "infrastructure" / "terraform"
 
-LAMBDA_FUNCTIONS = ["generate_diagram", "chat_crud", "get_history"]
+LAMBDA_FUNCTIONS = ["generate_diagram", "chat_crud", "get_history", "session_crud"]
 AWS_REGION = "us-east-1"
 
 
@@ -168,7 +168,8 @@ def upload_lambda_function(func_name):
     func_mapping = {
         "generate_diagram": "lambda_generate_diagram_arn",
         "chat_crud": "lambda_chat_crud_arn",
-        "get_history": "lambda_get_history_arn"
+        "get_history": "lambda_get_history_arn",
+        "session_crud": "lambda_session_crud_arn"
     }
     
     if func_name not in func_mapping:

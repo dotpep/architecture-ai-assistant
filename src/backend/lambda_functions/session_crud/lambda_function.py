@@ -6,6 +6,7 @@ Handles creating, reading, updating, and deleting chat sessions.
 import json
 import os
 import sys
+from decimal import Decimal
 from typing import Dict, Any, Optional
 
 # Add shared modules to path
@@ -20,6 +21,13 @@ from utils import (
     validate_diagram_type
 )
 from aws_helpers import DynamoDBHelper
+
+
+def decimal_to_int(obj):
+    """Convert Decimal objects to int for JSON serialization."""
+    if isinstance(obj, Decimal):
+        return int(obj)
+    raise TypeError
 
 
 def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -41,7 +49,7 @@ def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
         },
-        'body': json.dumps(body)
+        'body': json.dumps(body, default=decimal_to_int)
     }
 
 
@@ -58,7 +66,12 @@ def create_session(event: Dict[str, Any], dynamodb_helper: DynamoDBHelper) -> Di
     """
     try:
         # Parse request body (optional parameters)
-        body = json.loads(event.get('body', '{}'))
+        # Handle None or empty body
+        raw_body = event.get('body')
+        if raw_body is None or raw_body == '':
+            body = {}
+        else:
+            body = json.loads(raw_body)
         
         # Generate session ID and timestamp
         session_id = generate_session_id()
