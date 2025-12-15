@@ -175,14 +175,23 @@
     - Test extraction from various response formats with mermaid delimiters
     - **Validates: Requirements 5.3, 10.5**
 
-- [ ] 6. Implement generate_diagram Lambda function
-  - [ ] 6.1 Create main Lambda handler for diagram generation
+- [x] 6. Implement generate_diagram Lambda function
+
+
+
+
+
+  - [x] 6.1 Create main Lambda handler for diagram generation
+
+
     - Create `src/backend/lambda_functions/generate_diagram/lambda_function.py`
     - Implement request validation for userPrompt and diagramType
     - Call LLM API with constructed prompt
     - Extract Mermaid code from response
     - _Requirements: 2.1, 5.1, 5.2, 5.3, 7.1_
-  - [ ] 6.2 Implement Mermaid validation
+  - [x] 6.2 Implement Mermaid validation
+
+
     - Create validation function to check Mermaid syntax
     - Return error response for invalid code
     - _Requirements: 2.5, 5.4_
@@ -194,7 +203,9 @@
     - **Property 12: Invalid Code Error Handling**
     - Test that invalid Mermaid returns 400 with error details
     - **Validates: Requirements 5.4, 7.4**
-  - [ ] 6.5 Implement S3 storage for diagrams
+  - [x] 6.5 Implement S3 storage for diagrams
+
+
     - Save Mermaid code as markdown file to S3
     - Generate PNG image and save to S3
     - Return CloudFront URLs in response
