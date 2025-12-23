@@ -20,7 +20,14 @@ The Architecture AI Assistant enables users to:
 - **Storage**: DynamoDB for session-based chat history, S3 for diagram files
 - **Infrastructure**: Terraform for Infrastructure-as-Code
 
+---
 ![High Level Architecture](/docs/architecutre-diagram.png)
+
+
+
+---
+DeepWiki Generated Docs Index: [deepwiki.com/dotpep/architecture-ai-assistant](https://deepwiki.com/dotpep/architecture-ai-assistant)
+
 
 ### Session Management
 
