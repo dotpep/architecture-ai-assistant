@@ -1,0 +1,344 @@
+# Environment Configuration
+
+> **Relevant source files**
+> * [README.md](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md)
+> * [infrastructure/scripts/deploy.sh](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh)
+> * [infrastructure/terraform/variables.tf](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf)
+
+## Purpose and Scope
+
+This document describes all environment configuration requirements for the Architecture AI Assistant, including Terraform variables, frontend environment files, Lambda environment variables, and secrets management practices. This covers the configuration needed to deploy and run the application across different environments.
+
+For the deployment process that uses these configurations, see [Deployment Script](/dotpep/architecture-ai-assistant/6.1-deployment-script). For setting up AWS credentials and IAM permissions required for deployment, see [IAM Setup for Deployment](/dotpep/architecture-ai-assistant/6.2-iam-setup-for-deployment).
+
+---
+
+## Configuration Architecture Overview
+
+The Architecture AI Assistant uses a layered configuration approach where Terraform variables serve as the single source of truth, propagating configuration to both infrastructure resources and application components.
+
+### Configuration Flow Diagram
+
+```
+
+```
+
+**Configuration Flow Analysis**: Configuration begins with `terraform.tfvars` where developers specify all deployment parameters including LLM API credentials, AWS region, and project settings. Terraform reads these values through `variables.tf` definitions and provisions AWS resources with the appropriate environment variables. The `outputs.tf` file exports critical values like the API Gateway URL, which `deploy.sh` then uses to generate the frontend `.env` file. Lambda functions receive their configuration directly as environment variables during Terraform provisioning, while the frontend receives configuration through build-time environment variables injected by Vite.
+
+**Sources**: [infrastructure/terraform/variables.tf L1-L53](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L1-L53)
+
+ [infrastructure/scripts/deploy.sh L140-L177](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L140-L177)
+
+ [README.md L71-L101](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L71-L101)
+
+---
+
+## Terraform Variables Configuration
+
+### terraform.tfvars File Structure
+
+The `terraform.tfvars` file is the primary configuration source for the entire deployment. This file must be created manually and should never be committed to version control.
+
+| Variable Name | Type | Required | Description | Example Value |
+| --- | --- | --- | --- | --- |
+| `llm_api_endpoint` | string | Yes | LLM API endpoint URL (OpenAI-compatible) | `https://api.groq.com/openai/v1/chat/completions` |
+| `llm_api_key` | string | Yes | Authentication key for LLM API | `gsk_xxx...` |
+| `llm_model` | string | No | LLM model identifier | `llama-3.3-70b-versatile` |
+| `aws_region` | string | No | AWS region for deployment | `us-east-1` |
+| `environment` | string | No | Environment name | `dev`, `staging`, `prod` |
+| `project_name` | string | No | Project name for resource naming | `architecture-ai-assistant` |
+| `s3_bucket_name` | string | No | S3 bucket name | `architecture-ai-assistant-bucket` |
+| `dynamodb_table_name` | string | No | DynamoDB table name | `chat_history` |
+
+### Variable Definitions
+
+The variable definitions in `variables.tf` specify types, defaults, and sensitivity flags:
+
+```
+
+```
+
+The `sensitive = true` flag prevents these values from appearing in Terraform plan output or logs, protecting credentials from accidental exposure.
+
+**Sources**: [infrastructure/terraform/variables.tf L1-L53](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L1-L53)
+
+ [README.md L79-L92](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L79-L92)
+
+### Creating terraform.tfvars
+
+The repository includes a template file that should be copied and populated:
+
+```
+
+```
+
+Example `terraform.tfvars` content:
+
+```
+
+```
+
+**Important**: The `terraform.tfvars` file should be listed in `.gitignore` to prevent credential leakage.
+
+**Sources**: [infrastructure/terraform/variables.tf L4-L53](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L4-L53)
+
+ [README.md L125-L131](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L125-L131)
+
+---
+
+## Frontend Environment Configuration
+
+### VITE_API_BASE_URL Generation
+
+The frontend requires a single environment variable at build time: `VITE_API_BASE_URL`. This value is automatically generated by the deployment script from Terraform outputs.
+
+```
+
+```
+
+**Frontend Environment Generation**: The deployment script automates `.env` file creation by extracting the API Gateway URL from Terraform outputs. The script uses Python to parse the JSON output and writes a `.env` file in the frontend directory. Vite then injects this value at build time, replacing all occurrences of `import.meta.env.VITE_API_BASE_URL` with the actual URL.
+
+**Sources**: [infrastructure/scripts/deploy.sh L170-L177](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L170-L177)
+
+ [infrastructure/scripts/deploy.sh L195-L199](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L195-L199)
+
+### Deployment Script Implementation
+
+The `deploy.sh` script handles frontend environment configuration in Phase 4:
+
+```
+
+```
+
+**Sources**: [infrastructure/scripts/deploy.sh L186-L203](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L186-L203)
+
+### Manual Frontend Configuration
+
+For local development or manual deployment, create the `.env` file manually:
+
+```
+
+```
+
+**Sources**: [README.md L166-L174](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L166-L174)
+
+ [README.md L197-L207](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L197-L207)
+
+---
+
+## Lambda Function Environment Variables
+
+### Environment Variable Propagation to Lambda
+
+Lambda functions receive their configuration through Terraform-managed environment variables. These are set during infrastructure provisioning and cannot be changed without redeploying.
+
+```
+
+```
+
+**Lambda Environment Variable Flow**: Terraform reads variables from `terraform.tfvars`, validates them against `variables.tf` definitions, and provisions Lambda functions with environment variables defined in the `environment` block of each Lambda resource. At runtime, Python Lambda functions access these values through the `os.environ` dictionary. This ensures configuration is immutable during execution and can only be changed through infrastructure updates.
+
+**Sources**: [infrastructure/terraform/variables.tf L34-L52](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L34-L52)
+
+### Lambda Function Environment Variables by Function
+
+**generate_diagram Function:**
+
+* `LLM_API_ENDPOINT`: Full URL to LLM API endpoint
+* `LLM_API_KEY`: Authentication key for LLM API
+* `LLM_MODEL`: Model identifier to use for generation
+* `S3_BUCKET_NAME`: S3 bucket for storing diagrams
+* `DYNAMODB_TABLE_NAME`: DynamoDB table for chat history
+
+**chat_crud Function:**
+
+* `DYNAMODB_TABLE_NAME`: DynamoDB table for chat history
+
+**get_history Function:**
+
+* `DYNAMODB_TABLE_NAME`: DynamoDB table for chat history
+
+### Accessing Environment Variables in Lambda Code
+
+Lambda functions access configuration through Python's `os.environ`:
+
+```
+
+```
+
+**Sources**: [infrastructure/terraform/variables.tf L34-L53](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L34-L53)
+
+---
+
+## Secrets Management
+
+### Sensitive Variable Handling
+
+The system implements multiple layers of protection for sensitive credentials:
+
+| Security Layer | Implementation | Purpose |
+| --- | --- | --- |
+| Variable Sensitivity | `sensitive = true` in variables.tf | Prevents display in Terraform output |
+| .gitignore | `terraform.tfvars` excluded | Prevents credential commits |
+| Terraform State | State file contains encrypted values | Protected state storage |
+| Lambda Environment | Encrypted at rest by default | Runtime credential protection |
+| AWS Secrets Manager | Optional integration | Enterprise secrets management |
+
+### Sensitive Variables Configuration
+
+The `variables.tf` file marks credential variables as sensitive:
+
+```
+
+```
+
+When Terraform runs, these variables will not appear in plan or apply output, showing only `(sensitive value)` instead.
+
+**Sources**: [infrastructure/terraform/variables.tf L34-L46](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L34-L46)
+
+### Best Practices for Secrets
+
+1. **Never commit terraform.tfvars**: Ensure `.gitignore` includes `terraform.tfvars` and `*.tfvars` (except example files)
+2. **Use terraform.tfvars.example**: Provide a template with placeholder values: ``` ```
+3. **Protect Terraform State**: Store `terraform.tfstate` in encrypted S3 backend with versioning (production environments)
+4. **Rotate Credentials Regularly**: Update LLM API keys periodically and redeploy
+5. **Environment Isolation**: Use separate API keys for dev/staging/prod environments
+
+**Sources**: [README.md L92](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L92-L92)
+
+ [infrastructure/terraform/variables.tf L34-L46](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L34-L46)
+
+---
+
+## Environment-Specific Configuration
+
+### Multi-Environment Setup
+
+The system supports multiple deployment environments through the `environment` variable. This affects resource naming and enables parallel deployments.
+
+```
+
+```
+
+**Multi-Environment Architecture**: Each environment (dev, staging, prod) uses a separate `.tfvars` file with environment-specific configuration. The `environment` variable is interpolated into resource names, creating isolated AWS resources per environment. This enables testing in development without affecting production, and allows different LLM API keys and quotas per environment.
+
+**Sources**: [infrastructure/terraform/variables.tf L10-L14](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L10-L14)
+
+ [README.md L79-L90](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L79-L90)
+
+### Environment Variable Table
+
+| Environment | Purpose | LLM API Key | Resource Suffix | Typical AWS Region |
+| --- | --- | --- | --- | --- |
+| `dev` | Development testing | Separate dev key | `-dev` | `us-east-1` |
+| `staging` | Pre-production validation | Staging key | `-staging` | `us-east-1` |
+| `prod` | Production deployment | Production key | `-prod` | `us-east-1` or multi-region |
+
+### Deploying Multiple Environments
+
+To deploy different environments, use separate `.tfvars` files:
+
+```
+
+```
+
+Or use Terraform workspaces:
+
+```
+
+```
+
+**Sources**: [infrastructure/terraform/variables.tf L10-L14](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L10-L14)
+
+ [README.md L125-L131](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L125-L131)
+
+---
+
+## Configuration Validation
+
+### Prerequisite Validation
+
+The deployment script validates configuration prerequisites before deployment:
+
+```
+
+```
+
+**Sources**: [infrastructure/scripts/deploy.sh L51-L68](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L51-L68)
+
+### Configuration Checklist
+
+Before deploying, verify:
+
+1. **AWS Credentials Configured**: ``` ```
+2. **Terraform Variables Set**: ``` ```
+3. **LLM API Endpoint Accessible**: ``` ```
+4. **Unique S3 Bucket Name**: ``` ```
+
+### Post-Deployment Configuration Verification
+
+After deployment, verify configuration propagation:
+
+```
+
+```
+
+**Sources**: [infrastructure/scripts/deploy.sh L51-L68](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L51-L68)
+
+ [README.md L185-L194](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L185-L194)
+
+---
+
+## Troubleshooting Configuration Issues
+
+### Common Configuration Problems
+
+| Problem | Symptom | Solution |
+| --- | --- | --- |
+| Missing terraform.tfvars | `Error: No value for required variable` | Copy `terraform.tfvars.example` and populate values |
+| Invalid LLM API Key | Lambda returns 401/403 errors | Verify API key in `terraform.tfvars` and redeploy |
+| Frontend can't reach API | CORS errors in browser | Ensure `VITE_API_BASE_URL` matches API Gateway URL |
+| Lambda env vars not updated | Old configuration values | Redeploy: `terraform apply` updates Lambda configuration |
+| S3 bucket name conflict | `BucketAlreadyExists` error | Choose globally unique bucket name |
+
+### Configuration Debugging Commands
+
+```
+
+```
+
+**Sources**: [README.md L310-L341](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L310-L341)
+
+---
+
+## Configuration Summary
+
+### Configuration Files Location Map
+
+```python
+architecture-ai-assistant/
+├── infrastructure/
+│   └── terraform/
+│       ├── terraform.tfvars          # Primary config (create from example)
+│       ├── terraform.tfvars.example  # Template with placeholders
+│       ├── variables.tf              # Variable definitions
+│       └── outputs.tf                # Exported values
+└── src/
+    └── frontend/
+        └── .env                      # Generated by deploy.sh
+```
+
+### Required Configuration Steps
+
+1. **Create terraform.tfvars**: Copy example and set `llm_api_endpoint`, `llm_api_key`, and other variables
+2. **Configure AWS Credentials**: Run `aws configure` with access key and secret
+3. **Run Deployment**: Execute `./infrastructure/scripts/deploy.sh` which handles all remaining configuration
+4. **Verify Deployment**: Check Terraform outputs and test application access
+
+The deployment script automates frontend `.env` creation and Lambda environment variable provisioning, requiring only initial Terraform variable configuration from the developer.
+
+**Sources**: [README.md L21-L92](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/README.md#L21-L92)
+
+ [infrastructure/terraform/variables.tf L1-L53](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/terraform/variables.tf#L1-L53)
+
+ [infrastructure/scripts/deploy.sh L1-L246](https://github.com/dotpep/architecture-ai-assistant/blob/1285f968/infrastructure/scripts/deploy.sh#L1-L246)
